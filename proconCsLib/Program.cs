@@ -96,6 +96,7 @@ class Program
 }
 
 /// <summary>
+/// カスタマイズしたIO
 /// </summary>
 namespace MyIO
 {
@@ -124,6 +125,7 @@ namespace MyIO
         public Scanner() { file = Console.In; }
         public Scanner(string path) { file = new StreamReader(path); isConsole = false; }
         public void Dispose() { if (!isConsole) file.Dispose(); }
+        #region Read読み込み
         public T Get<T>() => (T)Convert(file.ReadLine(), Type.GetTypeCode(typeof(T)));
         public int Int => Get<int>();
         public uint UInt => Get<uint>();
@@ -260,6 +262,53 @@ namespace MyIO
             }
             return array;
         }
+        #endregion
+
+        #region next読み込み
+        string[] nextBuffer = new string[0];
+        int BufferCnt = 0;
+
+        char[] cs = new char[] { ' ' };
+
+        public string next()
+        {
+            while (BufferCnt >= nextBuffer.Length)
+            {
+                string st = file.ReadLine();
+                while (st == "") st = file.ReadLine();
+                nextBuffer = st.Split(cs, StringSplitOptions.RemoveEmptyEntries);
+                BufferCnt = 0;
+            }
+            return nextBuffer[BufferCnt++];
+        }
+
+        public int nextInt()
+        {
+            return int.Parse(next());
+        }
+
+        public long nextLong()
+        {
+            return long.Parse(next());
+        }
+
+        public double nextDouble()
+        {
+            return double.Parse(next());
+        }
+
+        private T[] enumerate<T>(int n, Func<T> f)
+        {
+            var a = new T[n];
+            for (int i = 0; i < n; ++i) a[i] = f();
+            return a;
+        }
+        
+        public string[] next(int n) { return enumerate(n, next); }
+        public double[] nextDouble(int n) { return enumerate(n, nextDouble); }
+        public int[] nextInt(int n) { return enumerate(n, nextInt); }
+        public long[] nextLong(int n) { return enumerate(n, nextLong); }
+        #endregion
     }
 }
 
