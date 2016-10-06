@@ -6,7 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+
 using Problem = Tmp.Problem;
+using MyIO;
+using STL;
+
 namespace Tmp
 {
     using static Func;
@@ -58,9 +62,380 @@ namespace Tmp
         /// </summary>
         void SolveOne()
         {
+
         }
     }
 }
+class Program
+{
+    public static RandomSFMT rand = new RandomSFMT();
+    public static bool IsJudgeMode = true;
+    public static bool IsGCJMode = false;
+    public static bool IsSolveCreated = true;
+    static void Main()
+    {
+        if (IsJudgeMode)
+            if (IsGCJMode) using (var problem = new Problem(true, new Scanner("C-large-practice.in.txt"), new Printer("output.txt"))) problem.Solve();
+            else using (var problem = new Problem(false, new Printer())) problem.Solve();
+        else
+        {
+            var num = 1;
+            int size = 0;
+            decimal time = 0;
+            for (var tmp = 0; tmp < num; tmp++)
+            {
+                using (var P = IsSolveCreated ? new Problem(false, new Scanner("input.txt"), new Printer()) : new Problem(false))
+                {
+                    size = P.Size;
+                    time += Func.MeasureTime(() => P.Solve());
+                }
+            }
+            Console.WriteLine("{0}, {1}ms", size, time / num);
+        }
+    }
+}
+
+/// <summary>
+/// </summary>
+namespace MyIO
+{
+    class Printer : IDisposable
+    {
+        bool isConsole;
+        TextWriter file;
+        public Printer() { file = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false }; isConsole = true; }
+        public Printer(string path) { file = new StreamWriter(path, false) { AutoFlush = false }; isConsole = false; }
+        public void Write<T>(T value) => file.Write(value);
+        public void Write(bool b) => file.Write(b ? "YES" : "NO");
+        public void Write(string str, params object[] args) => file.Write(str, args);
+        public void WriteLine() => file.WriteLine();
+        public void WriteLine<T>(T value) => file.WriteLine(value);
+        public void WriteLine(bool b) => file.WriteLine(b ? "YES" : "NO");
+        public void WriteLine<T>(IEnumerable<T> list) { foreach (var x in list) file.WriteLine(x); }
+        public void WriteLine<T>(List<T> list) { foreach (var x in list) file.WriteLine(x); }
+        public void WriteLine<T>(T[] list) { foreach (var x in list) file.WriteLine(x); }
+        public void WriteLine(string str, params object[] args) => file.WriteLine(str, args);
+        public void Dispose() { file.Flush(); if (!isConsole) file.Dispose(); }
+    }
+    class Scanner : IDisposable
+    {
+        bool isConsole;
+        TextReader file;
+        public Scanner() { file = Console.In; }
+        public Scanner(string path) { file = new StreamReader(path); isConsole = false; }
+        public void Dispose() { if (!isConsole) file.Dispose(); }
+        public T Get<T>() => (T)Convert(file.ReadLine(), Type.GetTypeCode(typeof(T)));
+        public int Int => Get<int>();
+        public uint UInt => Get<uint>();
+        public long Long => Get<long>();
+        public ulong ULong => Get<ulong>();
+        public double Double => Get<double>();
+        public decimal Decimal => Get<decimal>();
+        public char Char => Get<char>();
+        public string String => Get<string>();
+        public Tuple<S, T> Get<S, T>() { S s; T t; Read(out s, out t); return new Tuple<S, T>(s, t); }
+        public Tuple<S, T, U> Get<S, T, U>() { S s; T t; U u; Read(out s, out t, out u); return new Tuple<S, T, U>(s, t, u); }
+        public Tuple<S, T, U, V> Get<S, T, U, V>() { S s; T t; U u; V v; Read(out s, out t, out u, out v); return new Tuple<S, T, U, V>(s, t, u, v); }
+        public Tuple<S, T, U, V, W> Get<S, T, U, V, W>() { S s; T t; U u; V v; W w; Read(out s, out t, out u, out v, out w); return new Tuple<S, T, U, V, W>(s, t, u, v, w); }
+        public Tuple<S, T, U, V, W, X> Get<S, T, U, V, W, X>() { S s; T t; U u; V v; W w; X x; Read(out s, out t, out u, out v, out w, out x); return new Tuple<S, T, U, V, W, X>(s, t, u, v, w, x); }
+        public Tuple<S, T, U, V, W, X, Y> Get<S, T, U, V, W, X, Y>() { S s; T t; U u; V v; W w; X x; Y y; Read(out s, out t, out u, out v, out w, out x, out y); return new Tuple<S, T, U, V, W, X, Y>(s, t, u, v, w, x, y); }
+        public Tuple<S, T, U, V, W, X, Y, Z> Get<S, T, U, V, W, X, Y, Z>() { S s; T t; U u; V v; W w; X x; Y y; Z z; Read(out s, out t, out u, out v, out w, out x, out y, out z); return new Tuple<S, T, U, V, W, X, Y, Z>(s, t, u, v, w, x, y, z); }
+        public Pair<S, T> Pair<S, T>() { S s; T t; Read(out s, out t); return new Pair<S, T>(s, t); }
+        object Convert(string str, TypeCode type)
+        {
+            if (type == TypeCode.Int32) return int.Parse(str);
+            else if (type == TypeCode.UInt32) return uint.Parse(str);
+            else if (type == TypeCode.Int64) return long.Parse(str);
+            else if (type == TypeCode.UInt64) return ulong.Parse(str);
+            else if (type == TypeCode.Double) return double.Parse(str);
+            else if (type == TypeCode.Decimal) return decimal.Parse(str);
+            else if (type == TypeCode.Char) return str[0];
+            else if (type == TypeCode.String) return str;
+            else if (type == Type.GetTypeCode(typeof(Point))) { int s, t; Read(out s, out t); return new Point(s, t); }
+            else throw new Exception();
+        }
+        public T[] ReadMany<T>() { var type = Type.GetTypeCode(typeof(T)); return file.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries).Select(str => (T)Convert(str, type)).ToArray(); }
+        public T[] ReadMany<T>(int n) { var type = Type.GetTypeCode(typeof(T)); return file.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries).Take(n).Select(str => (T)Convert(str, type)).ToArray(); }
+        public T[] ReadManyLines<T>(int n, Func<T> selector) => Enumerable.Range(0, n).Select(_ => selector()).ToArray();
+        public T[] ReadManyLines<T>(int n) => Enumerable.Range(0, n).Select(_ => Get<T>()).ToArray();
+        public Tuple<S, T>[] ReadManyLines<S, T>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T>()).ToArray();
+        public Tuple<S, T, U>[] ReadManyLines<S, T, U>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U>()).ToArray();
+        public Tuple<S, T, U, V>[] ReadManyLines<S, T, U, V>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V>()).ToArray();
+        public Tuple<S, T, U, V, W>[] ReadManyLines<S, T, U, V, W>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W>()).ToArray();
+        public Tuple<S, T, U, V, W, X>[] ReadManyLines<S, T, U, V, W, X>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W, X>()).ToArray();
+        public Tuple<S, T, U, V, W, X, Y>[] ReadManyLines<S, T, U, V, W, X, Y>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W, X, Y>()).ToArray();
+        public Tuple<S, T, U, V, W, X, Y, Z>[] ReadManyLines<S, T, U, V, W, X, Y, Z>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W, X, Y, Z>()).ToArray();
+        public T[,] ReadManyManyLines<T>(int X, int Y)
+        {
+            var array = new T[X, Y];
+            for (var y = 0; y < Y; y++) { var tmp = ReadMany<T>(X); for (var x = 0; x < X; x++) array[x, y] = tmp[x]; }
+            return array;
+        }
+        public void Read<S>(out S s)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S))).ToArray();
+            s = (S)read[0];
+        }
+        public void Read<S, T>(out S s, out T t)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+        }
+        public void Read<S, T, U>(out S s, out T t, out U u)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)), Type.GetTypeCode(typeof(U))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+            u = (U)read[2];
+        }
+        public void Read<S, T, U, V>(out S s, out T t, out U u, out V v)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)), Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+            u = (U)read[2];
+            v = (V)read[3];
+        }
+        public void Read<S, T, U, V, W>(out S s, out T t, out U u, out V v, out W w)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
+                Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+            u = (U)read[2];
+            v = (V)read[3];
+            w = (W)read[4];
+        }
+        public void Read<S, T, U, V, W, X>(out S s, out T t, out U u, out V v, out W w, out X x)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
+                Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W)), Type.GetTypeCode(typeof(X))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+            u = (U)read[2];
+            v = (V)read[3];
+            w = (W)read[4];
+            x = (X)read[5];
+        }
+        public void Read<S, T, U, V, W, X, Y>(out S s, out T t, out U u, out V v, out W w, out X x, out Y y)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
+                Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W)), Type.GetTypeCode(typeof(X)), Type.GetTypeCode(typeof(Y))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+            u = (U)read[2];
+            v = (V)read[3];
+            w = (W)read[4];
+            x = (X)read[5];
+            y = (Y)read[6];
+        }
+        public void Read<S, T, U, V, W, X, Y, Z>(out S s, out T t, out U u, out V v, out W w, out X x, out Y y, out Z z)
+        {
+            var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
+                Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W)),
+                Type.GetTypeCode(typeof(X)), Type.GetTypeCode(typeof(Y)), Type.GetTypeCode(typeof(Z))).ToArray();
+            s = (S)read[0];
+            t = (T)read[1];
+            u = (U)read[2];
+            v = (V)read[3];
+            w = (W)read[4];
+            x = (X)read[5];
+            y = (Y)read[6];
+            z = (Z)read[7];
+        }
+        static char[] sep = new char[] { ' ', '/' };
+        IEnumerable<object> ReadMulti(params TypeCode[] types)
+        {
+            var input = file.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = 0; i < types.Length; i++) yield return Convert(input[i], types[i]);
+        }
+        public T[,] Board<T>(int X, int Y, Func<char, int, int, T> selector)
+        {
+            var array = new T[X, Y];
+            for (var y = 0; y < Y; y++)
+            {
+                var str = Get<string>();
+                for (var x = 0; x < X; x++) array[x, y] = selector(str[x], x, y);
+            }
+            return array;
+        }
+    }
+}
+
+/// <summary>
+/// C++のSTLを再実装
+/// </summary>
+namespace STL
+{
+    class PriorityQueue<T> : IEnumerable<T>, ICollection, IEnumerable, ICloneable
+    {
+        Comparison<T> comp;
+        List<T> list;
+        public int Count { get; private set; } = 0;
+        public bool IsEmpty => Count == 0;
+        public PriorityQueue(IEnumerable<T> source) : this((Comparison<T>)null, 0, source) { }
+        public PriorityQueue(int capacity = 0, IEnumerable<T> source = null) : this((Comparison<T>)null, capacity, source) { }
+        public PriorityQueue(IComparer<T> comp, IEnumerable<T> source) : this(comp.ToComparison(), source) { }
+        public PriorityQueue(IComparer<T> comp, int capacity = 0, IEnumerable<T> source = null) : this(comp.ToComparison(), source) { list.Capacity = capacity; }
+        public PriorityQueue(Comparison<T> comp, IEnumerable<T> source) : this(comp, 0, source) { }
+        public PriorityQueue(Comparison<T> comp, int capacity = 0, IEnumerable<T> source = null) { this.comp = comp == null ? Func.DefaultComparison<T>() : comp; list = new List<T>(capacity); if (source != null) foreach (var x in source) Enqueue(x); }
+        /// <summary>
+        /// add an item
+        /// this is an O(log n) operation
+        /// </summary>
+        /// <param name="x">item</param>
+        public void Enqueue(T x)
+        {
+            var pos = Count++;
+            list.Add(x);
+            while (pos > 0)
+            {
+                var p = (pos - 1) / 2;
+                if (comp(list[p], x) <= 0) break;
+                list[pos] = list[p];
+                pos = p;
+            }
+            list[pos] = x;
+        }
+        /// <summary>
+        /// return the minimum element and remove it
+        /// this is an O(log n) operation
+        /// </summary>
+        /// <returns>the minimum</returns>
+        public T Dequeue()
+        {
+            var value = list[0];
+            var x = list[--Count];
+            list.RemoveAt(Count);
+            if (Count == 0) return value;
+            var pos = 0;
+            while (pos * 2 + 1 < Count)
+            {
+                var a = 2 * pos + 1;
+                var b = 2 * pos + 2;
+                if (b < Count && comp(list[b], list[a]) < 0) a = b;
+                if (comp(list[a], x) >= 0) break;
+                list[pos] = list[a];
+                pos = a;
+            }
+            list[pos] = x;
+            return value;
+        }
+        /// <summary>
+        /// look at the minimum element
+        /// this is an O(1) operation
+        /// </summary>
+        /// <returns>the minimum</returns>
+        public T Peek() => list[0];
+        public IEnumerator<T> GetEnumerator() { var x = (PriorityQueue<T>)Clone(); while (x.Count > 0) yield return x.Dequeue(); }
+        void CopyTo(Array array, int index) { foreach (var x in this) array.SetValue(x, index++); }
+        public object Clone() { var x = new PriorityQueue<T>(comp, Count); x.list.AddRange(list); return x; }
+        public void Clear() { list = new List<T>(); Count = 0; }
+        public void TrimExcess() => list.TrimExcess();
+        /// <summary>
+        /// check whether item is in this queue
+        /// this is an O(n) operation
+        /// </summary>
+        public bool Contains(T item) => list.Contains(item);
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        void ICollection.CopyTo(Array array, int index) => CopyTo(array, index);
+        bool ICollection.IsSynchronized => false;
+        object ICollection.SyncRoot => this;
+    }
+    class Deque<T>
+    {
+        T[] array;
+        int offset, capacity;
+        public int Count { get; protected set; }
+        public Deque(int capacity) { array = new T[this.capacity = capacity]; Count = 0; offset = 0; }
+        public Deque() : this(16) { }
+        public T this[int index] { get { return array[GetIndex(index)]; } set { array[GetIndex(index)] = value; } }
+        int GetIndex(int index) { var tmp = index + offset; return tmp >= capacity ? tmp - capacity : tmp; }
+        public T PeekFront() => array[offset];
+        public T PeekBack() => array[GetIndex(Count - 1)];
+        public void PushFront(T item)
+        {
+            if (Count == capacity) Extend();
+            if (--offset < 0) offset += array.Length;
+            array[offset] = item;
+            Count++;
+        }
+        public T PopFront()
+        {
+            Count--;
+            var tmp = array[offset++];
+            if (offset >= capacity) offset -= capacity;
+            return tmp;
+        }
+        public void PushBack(T item)
+        {
+            if (Count == capacity) Extend();
+            var id = (Count++) + offset;
+            if (id >= capacity) id -= capacity;
+            array[id] = item;
+        }
+        public T PopBack() => array[GetIndex(--Count)];
+        public void Insert(int index, T item)
+        {
+            PushFront(item);
+            for (var i = 0; i < index; i++) this[i] = this[i + 1];
+            this[index] = item;
+        }
+        public T RemoveAt(int index)
+        {
+            var tmp = this[index];
+            for (var i = index; i > 0; i--) this[i] = this[i - 1];
+            PopFront();
+            return tmp;
+        }
+        void Extend()
+        {
+            var newArray = new T[capacity << 1];
+            if (offset > capacity - Count)
+            {
+                var length = array.Length - offset;
+                Array.Copy(array, offset, newArray, 0, length);
+                Array.Copy(array, 0, newArray, length, Count - length);
+            }
+            else Array.Copy(array, offset, newArray, 0, Count);
+            array = newArray;
+            offset = 0;
+            capacity <<= 1;
+        }
+    }
+    class PairComparer<S, T> : IComparer<Pair<S, T>>
+        where S : IComparable<S>
+        where T : IComparable<T>
+    {
+        public PairComparer() { }
+        public int Compare(Pair<S, T> x, Pair<S, T> y)
+        {
+            var p = x.First.CompareTo(y.First);
+            if (p != 0) return p;
+            else return x.Second.CompareTo(y.Second);
+        }
+    }
+    class Pair<S, T>
+    {
+        public S First;
+        public T Second;
+        public Pair() { First = default(S); Second = default(T); }
+        public Pair(S s, T t) { First = s; Second = t; }
+        public override string ToString() => $"({First}, {Second})";
+        public override int GetHashCode() => First.GetHashCode() ^ Second.GetHashCode();
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj)) return true;
+            else if (obj == null) return false;
+            var tmp = obj as Pair<S, T>;
+            return (object)tmp != null && First.Equals(tmp.First) && Second.Equals(tmp.Second);
+        }
+    }
+}
+
+#region 未整理ライブラリ
+
 interface ISegmentTree
 {
     void Add(int from, int to, long value);
@@ -347,34 +722,7 @@ class RMQ
         else return Math.Min(Min(from, to, 2 * node + 1, l, (l + r) >> 1), Min(from, to, 2 * node + 2, (l + r) >> 1, r));
     }
 }
-class Program
-{
-    public static RandomSFMT rand = new RandomSFMT();
-    public static bool IsJudgeMode = true;
-    public static bool IsGCJMode = false;
-    public static bool IsSolveCreated = true;
-    static void Main()
-    {
-        if (IsJudgeMode)
-            if (IsGCJMode) using (var problem = new Problem(true, new Scanner("C-large-practice.in.txt"), new Printer("output.txt"))) problem.Solve();
-            else using (var problem = new Problem(false, new Printer())) problem.Solve();
-        else
-        {
-            var num = 1;
-            int size = 0;
-            decimal time = 0;
-            for (var tmp = 0; tmp < num; tmp++)
-            {
-                using (var P = IsSolveCreated ? new Problem(false, new Scanner("input.txt"), new Printer()) : new Problem(false))
-                {
-                    size = P.Size;
-                    time += Func.MeasureTime(() => P.Solve());
-                }
-            }
-            Console.WriteLine("{0}, {1}ms", size, time / num);
-        }
-    }
-}
+
 class BinaryIndexedTree3D
 {
     public int X { get; private set; }
@@ -1693,170 +2041,7 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
         Console.WriteLine($"要素数 : {avl.Count} 個");
     }
 }
-class PriorityQueue<T> : IEnumerable<T>, ICollection, IEnumerable, ICloneable
-{
-    Comparison<T> comp;
-    List<T> list;
-    public int Count { get; private set; } = 0;
-    public bool IsEmpty => Count == 0;
-    public PriorityQueue(IEnumerable<T> source) : this((Comparison<T>)null, 0, source) { }
-    public PriorityQueue(int capacity = 0, IEnumerable<T> source = null) : this((Comparison<T>)null, capacity, source) { }
-    public PriorityQueue(IComparer<T> comp, IEnumerable<T> source) : this(comp.ToComparison(), source) { }
-    public PriorityQueue(IComparer<T> comp, int capacity = 0, IEnumerable<T> source = null) : this(comp.ToComparison(), source) { list.Capacity = capacity; }
-    public PriorityQueue(Comparison<T> comp, IEnumerable<T> source) : this(comp, 0, source) { }
-    public PriorityQueue(Comparison<T> comp, int capacity = 0, IEnumerable<T> source = null) { this.comp = comp == null ? Func.DefaultComparison<T>() : comp; list = new List<T>(capacity); if (source != null) foreach (var x in source) Enqueue(x); }
-    /// <summary>
-    /// add an item
-    /// this is an O(log n) operation
-    /// </summary>
-    /// <param name="x">item</param>
-    public void Enqueue(T x)
-    {
-        var pos = Count++;
-        list.Add(x);
-        while (pos > 0)
-        {
-            var p = (pos - 1) / 2;
-            if (comp(list[p], x) <= 0) break;
-            list[pos] = list[p];
-            pos = p;
-        }
-        list[pos] = x;
-    }
-    /// <summary>
-    /// return the minimum element and remove it
-    /// this is an O(log n) operation
-    /// </summary>
-    /// <returns>the minimum</returns>
-    public T Dequeue()
-    {
-        var value = list[0];
-        var x = list[--Count];
-        list.RemoveAt(Count);
-        if (Count == 0) return value;
-        var pos = 0;
-        while (pos * 2 + 1 < Count)
-        {
-            var a = 2 * pos + 1;
-            var b = 2 * pos + 2;
-            if (b < Count && comp(list[b], list[a]) < 0) a = b;
-            if (comp(list[a], x) >= 0) break;
-            list[pos] = list[a];
-            pos = a;
-        }
-        list[pos] = x;
-        return value;
-    }
-    /// <summary>
-    /// look at the minimum element
-    /// this is an O(1) operation
-    /// </summary>
-    /// <returns>the minimum</returns>
-    public T Peek() => list[0];
-    public IEnumerator<T> GetEnumerator() { var x = (PriorityQueue<T>)Clone(); while (x.Count > 0) yield return x.Dequeue(); }
-    void CopyTo(Array array, int index) { foreach (var x in this) array.SetValue(x, index++); }
-    public object Clone() { var x = new PriorityQueue<T>(comp, Count); x.list.AddRange(list); return x; }
-    public void Clear() { list = new List<T>(); Count = 0; }
-    public void TrimExcess() => list.TrimExcess();
-    /// <summary>
-    /// check whether item is in this queue
-    /// this is an O(n) operation
-    /// </summary>
-    public bool Contains(T item) => list.Contains(item);
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    void ICollection.CopyTo(Array array, int index) => CopyTo(array, index);
-    bool ICollection.IsSynchronized => false;
-    object ICollection.SyncRoot => this;
-}
-class Deque<T>
-{
-    T[] array;
-    int offset, capacity;
-    public int Count { get; protected set; }
-    public Deque(int capacity) { array = new T[this.capacity = capacity]; Count = 0; offset = 0; }
-    public Deque() : this(16) { }
-    public T this[int index] { get { return array[GetIndex(index)]; } set { array[GetIndex(index)] = value; } }
-    int GetIndex(int index) { var tmp = index + offset; return tmp >= capacity ? tmp - capacity : tmp; }
-    public T PeekFront() => array[offset];
-    public T PeekBack() => array[GetIndex(Count - 1)];
-    public void PushFront(T item)
-    {
-        if (Count == capacity) Extend();
-        if (--offset < 0) offset += array.Length;
-        array[offset] = item;
-        Count++;
-    }
-    public T PopFront()
-    {
-        Count--;
-        var tmp = array[offset++];
-        if (offset >= capacity) offset -= capacity;
-        return tmp;
-    }
-    public void PushBack(T item)
-    {
-        if (Count == capacity) Extend();
-        var id = (Count++) + offset;
-        if (id >= capacity) id -= capacity;
-        array[id] = item;
-    }
-    public T PopBack() => array[GetIndex(--Count)];
-    public void Insert(int index, T item)
-    {
-        PushFront(item);
-        for (var i = 0; i < index; i++) this[i] = this[i + 1];
-        this[index] = item;
-    }
-    public T RemoveAt(int index)
-    {
-        var tmp = this[index];
-        for (var i = index; i > 0; i--) this[i] = this[i - 1];
-        PopFront();
-        return tmp;
-    }
-    void Extend()
-    {
-        var newArray = new T[capacity << 1];
-        if (offset > capacity - Count)
-        {
-            var length = array.Length - offset;
-            Array.Copy(array, offset, newArray, 0, length);
-            Array.Copy(array, 0, newArray, length, Count - length);
-        }
-        else Array.Copy(array, offset, newArray, 0, Count);
-        array = newArray;
-        offset = 0;
-        capacity <<= 1;
-    }
-}
-class PairComparer<S, T> : IComparer<Pair<S, T>>
-    where S : IComparable<S>
-    where T : IComparable<T>
-{
-    public PairComparer() { }
-    public int Compare(Pair<S, T> x, Pair<S, T> y)
-    {
-        var p = x.First.CompareTo(y.First);
-        if (p != 0) return p;
-        else return x.Second.CompareTo(y.Second);
-    }
-}
-class Pair<S, T>
-{
-    public S First;
-    public T Second;
-    public Pair() { First = default(S); Second = default(T); }
-    public Pair(S s, T t) { First = s; Second = t; }
-    public override string ToString() => $"({First}, {Second})";
-    public override int GetHashCode() => First.GetHashCode() ^ Second.GetHashCode();
-    public override bool Equals(object obj)
-    {
-        if (ReferenceEquals(this, obj)) return true;
-        else if (obj == null) return false;
-        var tmp = obj as Pair<S, T>;
-        return (object)tmp != null && First.Equals(tmp.First) && Second.Equals(tmp.Second);
-    }
-}
+
 class Point : Pair<int, int>
 {
     public int X { get { return First; } set { First = value; } }
@@ -1889,168 +2074,7 @@ class Point : Pair<int, int>
     public static Point operator +(Point p, Point q) => new Point(p.X + q.X, p.Y + q.Y);
     public static Point operator -(Point p, Point q) => new Point(p.X - q.X, p.Y - q.Y);
 }
-class Printer : IDisposable
-{
-    bool isConsole;
-    TextWriter file;
-    public Printer() { file = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false }; isConsole = true; }
-    public Printer(string path) { file = new StreamWriter(path, false) { AutoFlush = false }; isConsole = false; }
-    public void Write<T>(T value) => file.Write(value);
-    public void Write(bool b) => file.Write(b ? "YES" : "NO");
-    public void Write(string str, params object[] args) => file.Write(str, args);
-    public void WriteLine() => file.WriteLine();
-    public void WriteLine<T>(T value) => file.WriteLine(value);
-    public void WriteLine(bool b) => file.WriteLine(b ? "YES" : "NO");
-    public void WriteLine<T>(IEnumerable<T> list) { foreach (var x in list) file.WriteLine(x); }
-    public void WriteLine<T>(List<T> list) { foreach (var x in list) file.WriteLine(x); }
-    public void WriteLine<T>(T[] list) { foreach (var x in list) file.WriteLine(x); }
-    public void WriteLine(string str, params object[] args) => file.WriteLine(str, args);
-    public void Dispose() { file.Flush(); if (!isConsole) file.Dispose(); }
-}
-class Scanner : IDisposable
-{
-    bool isConsole;
-    TextReader file;
-    public Scanner() { file = Console.In; }
-    public Scanner(string path) { file = new StreamReader(path); isConsole = false; }
-    public void Dispose() { if (!isConsole) file.Dispose(); }
-    public T Get<T>() => (T)Convert(file.ReadLine(), Type.GetTypeCode(typeof(T)));
-    public int Int => Get<int>();
-    public uint UInt => Get<uint>();
-    public long Long => Get<long>();
-    public ulong ULong => Get<ulong>();
-    public double Double => Get<double>();
-    public decimal Decimal => Get<decimal>();
-    public char Char => Get<char>();
-    public string String => Get<string>();
-    public Tuple<S, T> Get<S, T>() { S s; T t; Read(out s, out t); return new Tuple<S, T>(s, t); }
-    public Tuple<S, T, U> Get<S, T, U>() { S s; T t; U u; Read(out s, out t, out u); return new Tuple<S, T, U>(s, t, u); }
-    public Tuple<S, T, U, V> Get<S, T, U, V>() { S s; T t; U u; V v; Read(out s, out t, out u, out v); return new Tuple<S, T, U, V>(s, t, u, v); }
-    public Tuple<S, T, U, V, W> Get<S, T, U, V, W>() { S s; T t; U u; V v; W w; Read(out s, out t, out u, out v, out w); return new Tuple<S, T, U, V, W>(s, t, u, v, w); }
-    public Tuple<S, T, U, V, W, X> Get<S, T, U, V, W, X>() { S s; T t; U u; V v; W w; X x; Read(out s, out t, out u, out v, out w, out x); return new Tuple<S, T, U, V, W, X>(s, t, u, v, w, x); }
-    public Tuple<S, T, U, V, W, X, Y> Get<S, T, U, V, W, X, Y>() { S s; T t; U u; V v; W w; X x; Y y; Read(out s, out t, out u, out v, out w, out x, out y); return new Tuple<S, T, U, V, W, X, Y>(s, t, u, v, w, x, y); }
-    public Tuple<S, T, U, V, W, X, Y, Z> Get<S, T, U, V, W, X, Y, Z>() { S s; T t; U u; V v; W w; X x; Y y; Z z; Read(out s, out t, out u, out v, out w, out x, out y, out z); return new Tuple<S, T, U, V, W, X, Y, Z>(s, t, u, v, w, x, y, z); }
-    public Pair<S, T> Pair<S, T>() { S s; T t; Read(out s, out t); return new Pair<S, T>(s, t); }
-    object Convert(string str, TypeCode type)
-    {
-        if (type == TypeCode.Int32) return int.Parse(str);
-        else if (type == TypeCode.UInt32) return uint.Parse(str);
-        else if (type == TypeCode.Int64) return long.Parse(str);
-        else if (type == TypeCode.UInt64) return ulong.Parse(str);
-        else if (type == TypeCode.Double) return double.Parse(str);
-        else if (type == TypeCode.Decimal) return decimal.Parse(str);
-        else if (type == TypeCode.Char) return str[0];
-        else if (type == TypeCode.String) return str;
-        else if (type == Type.GetTypeCode(typeof(Point))) { int s, t; Read(out s, out t); return new Point(s, t); }
-        else throw new Exception();
-    }
-    public T[] ReadMany<T>() { var type = Type.GetTypeCode(typeof(T)); return file.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries).Select(str => (T)Convert(str, type)).ToArray(); }
-    public T[] ReadMany<T>(int n) { var type = Type.GetTypeCode(typeof(T)); return file.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries).Take(n).Select(str => (T)Convert(str, type)).ToArray(); }
-    public T[] ReadManyLines<T>(int n, Func<T> selector) => Enumerable.Range(0, n).Select(_ => selector()).ToArray();
-    public T[] ReadManyLines<T>(int n) => Enumerable.Range(0, n).Select(_ => Get<T>()).ToArray();
-    public Tuple<S, T>[] ReadManyLines<S, T>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T>()).ToArray();
-    public Tuple<S, T, U>[] ReadManyLines<S, T, U>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U>()).ToArray();
-    public Tuple<S, T, U, V>[] ReadManyLines<S, T, U, V>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V>()).ToArray();
-    public Tuple<S, T, U, V, W>[] ReadManyLines<S, T, U, V, W>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W>()).ToArray();
-    public Tuple<S, T, U, V, W, X>[] ReadManyLines<S, T, U, V, W, X>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W, X>()).ToArray();
-    public Tuple<S, T, U, V, W, X, Y>[] ReadManyLines<S, T, U, V, W, X, Y>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W, X, Y>()).ToArray();
-    public Tuple<S, T, U, V, W, X, Y, Z>[] ReadManyLines<S, T, U, V, W, X, Y, Z>(int n) => Enumerable.Range(0, n).Select(_ => Get<S, T, U, V, W, X, Y, Z>()).ToArray();
-    public T[,] ReadManyManyLines<T>(int X, int Y)
-    {
-        var array = new T[X, Y];
-        for (var y = 0; y < Y; y++) { var tmp = ReadMany<T>(X); for (var x = 0; x < X; x++) array[x, y] = tmp[x]; }
-        return array;
-    }
-    public void Read<S>(out S s)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S))).ToArray();
-        s = (S)read[0];
-    }
-    public void Read<S, T>(out S s, out T t)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-    }
-    public void Read<S, T, U>(out S s, out T t, out U u)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)), Type.GetTypeCode(typeof(U))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-        u = (U)read[2];
-    }
-    public void Read<S, T, U, V>(out S s, out T t, out U u, out V v)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)), Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-        u = (U)read[2];
-        v = (V)read[3];
-    }
-    public void Read<S, T, U, V, W>(out S s, out T t, out U u, out V v, out W w)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
-            Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-        u = (U)read[2];
-        v = (V)read[3];
-        w = (W)read[4];
-    }
-    public void Read<S, T, U, V, W, X>(out S s, out T t, out U u, out V v, out W w, out X x)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
-            Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W)), Type.GetTypeCode(typeof(X))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-        u = (U)read[2];
-        v = (V)read[3];
-        w = (W)read[4];
-        x = (X)read[5];
-    }
-    public void Read<S, T, U, V, W, X, Y>(out S s, out T t, out U u, out V v, out W w, out X x, out Y y)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
-            Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W)), Type.GetTypeCode(typeof(X)), Type.GetTypeCode(typeof(Y))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-        u = (U)read[2];
-        v = (V)read[3];
-        w = (W)read[4];
-        x = (X)read[5];
-        y = (Y)read[6];
-    }
-    public void Read<S, T, U, V, W, X, Y, Z>(out S s, out T t, out U u, out V v, out W w, out X x, out Y y, out Z z)
-    {
-        var read = ReadMulti(Type.GetTypeCode(typeof(S)), Type.GetTypeCode(typeof(T)),
-            Type.GetTypeCode(typeof(U)), Type.GetTypeCode(typeof(V)), Type.GetTypeCode(typeof(W)),
-            Type.GetTypeCode(typeof(X)), Type.GetTypeCode(typeof(Y)), Type.GetTypeCode(typeof(Z))).ToArray();
-        s = (S)read[0];
-        t = (T)read[1];
-        u = (U)read[2];
-        v = (V)read[3];
-        w = (W)read[4];
-        x = (X)read[5];
-        y = (Y)read[6];
-        z = (Z)read[7];
-    }
-    static char[] sep = new char[] { ' ', '/' };
-    IEnumerable<object> ReadMulti(params TypeCode[] types)
-    {
-        var input = file.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries);
-        for (var i = 0; i < types.Length; i++) yield return Convert(input[i], types[i]);
-    }
-    public T[,] Board<T>(int X, int Y, Func<char, int, int, T> selector)
-    {
-        var array = new T[X, Y];
-        for (var y = 0; y < Y; y++)
-        {
-            var str = Get<string>();
-            for (var x = 0; x < X; x++) array[x, y] = selector(str[x], x, y);
-        }
-        return array;
-    }
-}
+
 static class Func
 {
     public const int Inf = 1073741789;  // 2 * Inf < int.MaxValue, and Inf is a prime number
@@ -3005,3 +3029,5 @@ class RandomSFMT : Random
         }
     }
 }
+
+#endregion
