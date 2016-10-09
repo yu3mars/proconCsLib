@@ -62,7 +62,6 @@ namespace Tmp
         /// </summary>
         void SolveOne()
         {
-
         }
     }
 }
@@ -481,6 +480,15 @@ namespace STL
             return (object)tmp != null && First.Equals(tmp.First) && Second.Equals(tmp.Second);
         }
     }
+}
+
+
+    /// <summary>
+    /// </summary>
+    {
+    }
+
+    #endregion
 }
 
 #region 未整理ライブラリ
@@ -2091,37 +2099,37 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
     }
 }
 
-class Point : Pair<int, int>
+class PointInt : Pair<int, int>
 {
     public int X { get { return First; } set { First = value; } }
     public int Y { get { return Second; } set { Second = value; } }
-    public Point() : base(0, 0) { }
-    public Point(int x, int y) : base(x, y) { }
-    public IEnumerable<Point> Neighbors4()
+    public PointInt() : base(0, 0) { }
+    public PointInt(int x, int y) : base(x, y) { }
+    public IEnumerable<PointInt> Neighbors4()
     {
-        yield return new Point(X - 1, Y);
-        yield return new Point(X, Y - 1);
-        yield return new Point(X, Y + 1);
-        yield return new Point(X + 1, Y);
+        yield return new PointInt(X - 1, Y);
+        yield return new PointInt(X, Y - 1);
+        yield return new PointInt(X, Y + 1);
+        yield return new PointInt(X + 1, Y);
     }
-    public IEnumerable<Point> Neighbors8()
+    public IEnumerable<PointInt> Neighbors8()
     {
-        yield return new Point(X - 1, Y - 1);
-        yield return new Point(X - 1, Y);
-        yield return new Point(X - 1, Y + 1);
-        yield return new Point(X, Y - 1);
-        yield return new Point(X, Y + 1);
-        yield return new Point(X + 1, Y - 1);
-        yield return new Point(X + 1, Y);
-        yield return new Point(X + 1, Y + 1);
+        yield return new PointInt(X - 1, Y - 1);
+        yield return new PointInt(X - 1, Y);
+        yield return new PointInt(X - 1, Y + 1);
+        yield return new PointInt(X, Y - 1);
+        yield return new PointInt(X, Y + 1);
+        yield return new PointInt(X + 1, Y - 1);
+        yield return new PointInt(X + 1, Y);
+        yield return new PointInt(X + 1, Y + 1);
     }
-    public static Point operator +(Point p) => new Point(p.X, p.Y);
-    public static Point operator -(Point p) => new Point(-p.X, -p.Y);
-    public static Point operator /(Point p, int r) => new Point(p.X / r, p.Y / r);
-    public static Point operator *(int r, Point p) => new Point(p.X * r, p.Y * r);
-    public static Point operator *(Point p, int r) => new Point(p.X * r, p.Y * r);
-    public static Point operator +(Point p, Point q) => new Point(p.X + q.X, p.Y + q.Y);
-    public static Point operator -(Point p, Point q) => new Point(p.X - q.X, p.Y - q.Y);
+    public static PointInt operator +(PointInt p) => new PointInt(p.X, p.Y);
+    public static PointInt operator -(PointInt p) => new PointInt(-p.X, -p.Y);
+    public static PointInt operator /(PointInt p, int r) => new PointInt(p.X / r, p.Y / r);
+    public static PointInt operator *(int r, PointInt p) => new PointInt(p.X * r, p.Y * r);
+    public static PointInt operator *(PointInt p, int r) => new PointInt(p.X * r, p.Y * r);
+    public static PointInt operator +(PointInt p, PointInt q) => new PointInt(p.X + q.X, p.Y + q.Y);
+    public static PointInt operator -(PointInt p, PointInt q) => new PointInt(p.X - q.X, p.Y - q.Y);
 }
 
 static class Func
