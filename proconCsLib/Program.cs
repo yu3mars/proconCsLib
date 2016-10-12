@@ -30,7 +30,7 @@ namespace Tmp
             sc = scanner;
             pr = printer;
             IsGCJ = isGCJ;
-            if (isGCJ) Repeat = sc.Get<int>();
+            if (isGCJ) Repeat = sc.nextInt();
             else Read();
         }
         public Problem(bool isGCJ) : this(isGCJ, new Scanner(), new Printer()) { }
@@ -315,6 +315,58 @@ namespace MyIO
         #endregion
     }
 }
+
+/// <summary>
+/// 共通機能
+/// </summary>
+static partial class Func
+{
+    public const int Inf = 1073741789;  // 2 * Inf < int.MaxValue, and Inf is a prime number
+    public const long InfL = 4011686018427387913L;  // 2 * InfL < long.MaxValue, and InfL is a prime number
+    public static Comparison<T> DefaultComparison<T>() => (x, y) => Comparer<T>.Default.Compare(x, y);
+    public static Comparison<T> ToComparison<T>(this IComparer<T> comp) => comp == null ? DefaultComparison<T>() : (x, y) => comp.Compare(x, y);
+    /// <summary>
+    /// Find the first number x such that pred(x) is true
+    /// if pred(x) is false for all min&lt;=x&lt;max, then return max
+    /// in other words, pred(max) is assumed to be true
+    /// </summary>
+    /// <param name="min">inclusive lower limit</param>
+    /// <param name="max">exclusive upper limit</param>
+    /// <param name="pred">monotonous predicate, i.e. if pred(a) and a&lt;b, then pred(b)</param>
+    /// <returns>first number such that satisfy pred</returns>
+    public static long FirstBinary(long min, long max, Predicate<long> pred)
+    {
+        while (min < max)
+        {
+            var mid = (min + max) / 2;
+            if (pred(mid)) max = mid;
+            else min = mid + 1;
+        }
+        return min;
+    }
+    /// <summary>
+    /// Find the first number x such that pred(x) is true
+    /// if pred(x) is false for all min&lt;=x&lt;max, then return max
+    /// in other words, pred(max) is assumed to be true
+    /// </summary>
+    /// <param name="min">inclusive lower limit</param>
+    /// <param name="max">exclusive upper limit</param>
+    /// <param name="pred">monotonous predicate, i.e. if pred(a) and a&lt;b, then pred(b)</param>
+    /// <returns>first number such that satisfy pred</returns>
+    public static int FirstBinary(int min, int max, Predicate<int> pred)
+    {
+        while (min < max)
+        {
+            var mid = (min + max) / 2;
+            if (pred(mid)) max = mid;
+            else min = mid + 1;
+        }
+        return min;
+    }
+    public static void Swap<T>(this IList<T> array, int i, int j) { var tmp = array[i]; array[i] = array[j]; array[j] = tmp; }
+    public static void Swap<T>(ref T a, ref T b) { var tmp = a; a = b; b = tmp; }
+}
+
 
 /// <summary>
 /// C++のSTLを再実装
@@ -2288,59 +2340,23 @@ class PointInt : Pair<int, int>
     public static PointInt operator +(PointInt p, PointInt q) => new PointInt(p.X + q.X, p.Y + q.Y);
     public static PointInt operator -(PointInt p, PointInt q) => new PointInt(p.X - q.X, p.Y - q.Y);
 }
+#endregion
 
-static class Func
-{
-    public const int Inf = 1073741789;  // 2 * Inf < int.MaxValue, and Inf is a prime number
-    public const long InfL = 4011686018427387913L;  // 2 * InfL < long.MaxValue, and InfL is a prime number
-    public static Comparison<T> DefaultComparison<T>() => (x, y) => Comparer<T>.Default.Compare(x, y);
-    public static Comparison<T> ToComparison<T>(this IComparer<T> comp) => comp == null ? DefaultComparison<T>() : (x, y) => comp.Compare(x, y);
-    /// <summary>
-    /// Find the first number x such that pred(x) is true
-    /// if pred(x) is false for all min&lt;=x&lt;max, then return max
-    /// in other words, pred(max) is assumed to be true
-    /// </summary>
-    /// <param name="min">inclusive lower limit</param>
-    /// <param name="max">exclusive upper limit</param>
-    /// <param name="pred">monotonous predicate, i.e. if pred(a) and a&lt;b, then pred(b)</param>
-    /// <returns>first number such that satisfy pred</returns>
-    public static long FirstBinary(long min, long max, Predicate<long> pred)
-    {
-        while (min < max)
-        {
-            var mid = (min + max) / 2;
-            if (pred(mid)) max = mid;
-            else min = mid + 1;
-        }
-        return min;
-    }
-    /// <summary>
-    /// Find the first number x such that pred(x) is true
-    /// if pred(x) is false for all min&lt;=x&lt;max, then return max
-    /// in other words, pred(max) is assumed to be true
-    /// </summary>
-    /// <param name="min">inclusive lower limit</param>
-    /// <param name="max">exclusive upper limit</param>
-    /// <param name="pred">monotonous predicate, i.e. if pred(a) and a&lt;b, then pred(b)</param>
-    /// <returns>first number such that satisfy pred</returns>
-    public static int FirstBinary(int min, int max, Predicate<int> pred)
-    {
-        while (min < max)
-        {
-            var mid = (min + max) / 2;
-            if (pred(mid)) max = mid;
-            else min = mid + 1;
-        }
-        return min;
-    }
+#region Func
+
+/// <summary>
+/// その他の機能
+/// </summary>
+static partial class Func
+{ 
+
     public static Dictionary<T, S> Reverse<S, T>(this IDictionary<S, T> dict)
     {
         var r = new Dictionary<T, S>();
         foreach (var t in dict) r.Add(t.Value, t.Key);
         return r;
     }
-    public static void Swap<T>(this IList<T> array, int i, int j) { var tmp = array[i]; array[i] = array[j]; array[j] = tmp; }
-    public static void Swap<T>(ref T a, ref T b) { var tmp = a; a = b; b = tmp; }
+
     public static T IndexAt<T>(this T[,] array, Pair<int, int> index) => array[index.First, index.Second];
     public static bool InRegion(this Pair<int, int> p, int X, int Y) => p.InRegion(0, X, 0, Y);
     public static bool InRegion(this Pair<int, int> p, int x, int X, int y, int Y) => p.First >= x && p.Second >= y && p.First < X && p.Second < Y;
@@ -3138,6 +3154,7 @@ static class Func
     public static double Max(params double[] nums) { var min = double.MinValue; foreach (var n in nums) min = Math.Max(min, n); return min; }
     public static decimal Max(params decimal[] nums) { var min = decimal.MinValue; foreach (var n in nums) min = Math.Max(min, n); return min; }
 }
+
 class RandomSFMT : Random
 {
     int index, coin_bits, byte_pos, range, shift;
