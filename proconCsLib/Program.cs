@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Numerics;
+using System.Numerics;  //comment out if AOJ
 using System.Text;
 
 using Problem = Tmp.Problem;
 using MyIO;
 using STL;
 using static Geometry.Geometry3D;
+
+//#pragma warning disable   //for AOJ
 
 namespace Tmp
 {
@@ -46,11 +48,11 @@ namespace Tmp
         }
         public int Size { get { return 1; } }
         public const long Mod = 1000000007;
-        RandomSFMT rand = Program.rand;
+        //RandomSFMT rand = Program.rand;
 
         // 使用する変数をここに書く
-//        string S;
-//        int a;
+        // string S;
+        // int a;
         /// <summary>
         /// 読み込み処理をここに書く
         /// </summary>
@@ -63,13 +65,13 @@ namespace Tmp
         /// </summary>
         void SolveOne()
         {
-            
+
         }
     }
 }
 class Program
 {
-    public static RandomSFMT rand = new RandomSFMT();
+    //public static RandomSFMT rand = new RandomSFMT();
     public static bool IsJudgeMode = true;
     public static bool IsGCJMode = false;
     public static bool IsSolveCreated = true;
@@ -88,7 +90,7 @@ class Program
                 using (var P = IsSolveCreated ? new Problem(false, new Scanner("input.txt"), new Printer()) : new Problem(false))
                 {
                     size = P.Size;
-                    time += Func.MeasureTime(() => P.Solve());
+                    //time += Func.MeasureTime(() => P.Solve());
                 }
             }
             Console.WriteLine("{0}, {1}ms", size, time / num);
@@ -107,16 +109,16 @@ namespace MyIO
         TextWriter file;
         public Printer() { file = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false }; isConsole = true; }
         public Printer(string path) { file = new StreamWriter(path, false) { AutoFlush = false }; isConsole = false; }
-        public void Write<T>(T value) => file.Write(value);
-        public void Write(bool b) => file.Write(b ? "YES" : "NO");
-        public void Write(string str, params object[] args) => file.Write(str, args);
-        public void WriteLine() => file.WriteLine();
-        public void WriteLine<T>(T value) => file.WriteLine(value);
-        public void WriteLine(bool b) => file.WriteLine(b ? "YES" : "NO");
+        public void Write<T>(T value) { file.Write(value); }
+        public void Write(bool b) { file.Write(b ? "YES" : "NO"); }
+        public void Write(string str, params object[] args) { file.Write(str, args); }
+        public void WriteLine() { file.WriteLine(); }
+        public void WriteLine<T>(T value) { file.WriteLine(value); }
+        public void WriteLine(bool b) { file.WriteLine(b ? "YES" : "NO"); }
         public void WriteLine<T>(IEnumerable<T> list) { foreach (var x in list) file.WriteLine(x); }
         public void WriteLine<T>(List<T> list) { foreach (var x in list) file.WriteLine(x); }
         public void WriteLine<T>(T[] list) { foreach (var x in list) file.WriteLine(x); }
-        public void WriteLine(string str, params object[] args) => file.WriteLine(str, args);
+        public void WriteLine(string str, params object[] args) { file.WriteLine(str, args); }
         public void Dispose() { file.Flush(); if (!isConsole) file.Dispose(); }
     }
     class Scanner : IDisposable
@@ -126,7 +128,8 @@ namespace MyIO
         public Scanner() { file = Console.In; }
         public Scanner(string path) { file = new StreamReader(path); isConsole = false; }
         public void Dispose() { if (!isConsole) file.Dispose(); }
-        #region Read読み込み
+
+        #region Read読み込み //comment out if AOJ
         public T Get<T>() => (T)Convert(file.ReadLine(), Type.GetTypeCode(typeof(T)));
         public int Int => Get<int>();
         public uint UInt => Get<uint>();
@@ -510,19 +513,19 @@ namespace Geometry
             public Point3D(double x, double y, double z) { X = x; Y = y; Z = z; }
             public Point3D(double[] ls) { X = ls[0]; Y = ls[1]; Z = ls[2]; }
 
-            public static Point3D operator +(Point3D p) => new Point3D(p.X, p.Y, p.Z);
-            public static Point3D operator -(Point3D p) => new Point3D(-p.X, -p.Y, -p.Z);
-            public static Point3D operator /(Point3D p, double r) => new Point3D(p.X / r, p.Y / r, p.Z / r);
-            public static Point3D operator *(double r, Point3D p) => new Point3D(p.X * r, p.Y * r, p.Z * r);
-            public static Point3D operator *(Point3D p, double r) => new Point3D(p.X * r, p.Y * r, p.Z * r);
-            public static Point3D operator +(Point3D p, Point3D q) => new Point3D(p.X + q.X, p.Y + q.Y, p.Z + q.Z);
-            public static Point3D operator -(Point3D p, Point3D q) => new Point3D(p.X - q.X, p.Y - q.Y, p.Z - q.Z);
+            public static Point3D operator +(Point3D p) { return new Point3D(p.X, p.Y, p.Z); }
+            public static Point3D operator -(Point3D p) { return new Point3D(-p.X, -p.Y, -p.Z); }
+            public static Point3D operator /(Point3D p, double r) { return new Point3D(p.X / r, p.Y / r, p.Z / r); }
+            public static Point3D operator *(double r, Point3D p) { return new Point3D(p.X * r, p.Y * r, p.Z * r); }
+            public static Point3D operator *(Point3D p, double r) { return new Point3D(p.X * r, p.Y * r, p.Z * r); }
+            public static Point3D operator +(Point3D p, Point3D q) { return new Point3D(p.X + q.X, p.Y + q.Y, p.Z + q.Z); }
+            public static Point3D operator -(Point3D p, Point3D q) { return new Point3D(p.X - q.X, p.Y - q.Y, p.Z - q.Z); }
         }
 
         /// <summary>
         /// 線分/直線(3次元)
         /// </summary>
-         public struct Line3D
+        public struct Line3D
         {
             public Point3D a, b;
             public Line3D(Point3D a, Point3D b) { this.a = a; this.b = b; }
@@ -534,7 +537,7 @@ namespace Geometry
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static double dot(Point3D a,Point3D b)
+        public static double dot(Point3D a, Point3D b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
         }
@@ -581,7 +584,7 @@ namespace Geometry
         public static Point3D project_lp(Line3D l, Point3D p)
         {
             Point3D point = l.a, vec = l.b - l.a;
-            return point + dot(p - point, vec) / norm(vec) * vec;            
+            return point + dot(p - point, vec) / norm(vec) * vec;
         }
 
         /// <summary>
@@ -623,7 +626,7 @@ namespace Geometry
         public static double distance_ll(Line3D l, Line3D m)
         {
             Point3D v = cross(l.b - l.a, m.b - m.a), p = m.a - l.a;
-            if (dist(v)<Eps)
+            if (dist(v) < Eps)
             {
                 return distance_lp(l, m.a);
             }
@@ -633,7 +636,7 @@ namespace Geometry
             }
         }
         #endregion
-        
+
         //TODO Plane関連以下の実装
     }
 
@@ -757,7 +760,12 @@ class Eq : IEqualityComparer<List<int>>
         return x;
     }
 }
-/*class MultiSortedSet<T> : IEnumerable<T>, ICollection<T>
+
+/// <summary>
+/// 使わないで
+/// </summary>
+/// <typeparam name="T"></typeparam>
+class MultiSortedSet<T> : IEnumerable<T>, ICollection<T>
 {
     public IComparer<T> Comparer { get; private set; }
     private SortedSet<T> keys;
@@ -810,7 +818,7 @@ class Eq : IEqualityComparer<List<int>>
     public T Max { get { return keys.Max; } }
     public T Min { get { return keys.Min; } }
     public bool IsReadOnly { get { return false; } }
-}*/
+}
 class SkewHeap<T> : IEnumerable<T>
 {
     class Node : IEnumerable<T>
@@ -2537,7 +2545,13 @@ static class Func
         }
         return a;
     }
-    /*public static long GCD(long n, long m)
+    /// <summary>
+    /// 使わないで
+    /// </summary>
+    /// <param name="n"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
+    public static long GCD_oldver(long n, long m)
     {
         var a = Math.Abs(n);
         var b = Math.Abs(m);
@@ -2549,7 +2563,7 @@ static class Func
             b = c;
         }
         return a;
-    }*/
+    }
     public static long GCD(long a, long b)
     {
         var n = (ulong)Math.Abs(a); var m = (ulong)Math.Abs(b);
