@@ -2342,13 +2342,122 @@ class PointInt : Pair<int, int>
 }
 #endregion
 
+#region MyMath
+static partial class Func
+{
+    #region BasicMath
+    //TODO: 基本セットの整備(extgcdとか)
+
+    /// <summary>
+    /// 最大公約数
+    /// </summary>
+    /// <param name="n"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
+    public static int GCD(int n, int m)
+    {
+        var a = Math.Abs(n);
+        var b = Math.Abs(m);
+        if (a < b) { var c = a; a = b; b = c; }
+        while (b > 0)
+        {
+            var c = a % b;
+            a = b;
+            b = c;
+        }
+        return a;
+    }
+    /// <summary>
+    /// 使わないで
+    /// </summary>
+    /// <param name="n"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
+    public static long GCD_oldver(long n, long m)
+    {
+        var a = Math.Abs(n);
+        var b = Math.Abs(m);
+        if (a < b) { var c = a; a = b; b = c; }
+        while (b > 0)
+        {
+            var c = a % b;
+            a = b;
+            b = c;
+        }
+        return a;
+    }
+    /// <summary>
+    /// 最大公約数
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static long GCD(long a, long b)
+    {
+        var n = (ulong)Math.Abs(a); var m = (ulong)Math.Abs(b);
+        if (n == 0) return (long)m; if (m == 0) return (long)n;
+        int zm = 0, zn = 0;
+        while ((n & 1) == 0) { n >>= 1; zn++; }
+        while ((m & 1) == 0) { m >>= 1; zm++; }
+        while (m != n)
+        {
+            if (m > n) { m -= n; while ((m & 1) == 0) m >>= 1; }
+            else { n -= m; while ((n & 1) == 0) n >>= 1; }
+        }
+        return (long)n << Math.Min(zm, zn);
+    }
+    /// <summary>
+    /// 最大公約数
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static BigInteger GCD(BigInteger a, BigInteger b) { return BigInteger.GreatestCommonDivisor(a, b); } //comment out if AOJ
+
+    /// <summary>
+    /// 最小公倍数
+    /// </summary>
+    /// <param name="n"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
+    public static long LCM(long n, long m) => Math.Abs((n / GCD(n, m)) * m);
+
+    /// <summary>
+    /// n以下の素数のリストを返す (get all primes less than or equal to n)
+    /// </summary>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    public static List<int> GetPrimes(int n)
+    {
+        if (n < 3) n = 3;
+        var m = (n - 1) >> 1;
+        var primes = new List<int>((int)(n / Math.Log(n)));
+        primes.Add(2);
+        var composites = new bool[m];
+        composites[0] = false;
+        for (var p = 0; p < m; p++)
+        {
+            if (!composites[p])
+            {
+                var pnum = 2 * p + 3;
+                primes.Add(pnum);
+                for (var k = 3 * p + 3; k < m; k += pnum) composites[k] = true;
+            }
+        }
+        return primes;
+    }
+
+    #endregion
+}
+#endregion
+
 #region Func
 
 /// <summary>
 /// その他の機能
 /// </summary>
 static partial class Func
-{ 
+{
 
     public static Dictionary<T, S> Reverse<S, T>(this IDictionary<S, T> dict)
     {
@@ -2419,7 +2528,6 @@ static partial class Func
         if (n > 1) d.Add(n, 1);
         return d;
     }
-    public static long LCM(long n, long m) => Math.Abs((n / GCD(n, m)) * m);
     public static long Divide(long n, long m) => (n - Remainder(n, m)) / m;
     public static long Remainder(long n, long m)
     {
@@ -2501,26 +2609,7 @@ static partial class Func
         for (var i = 1; i < K; i++) tmp[i - 1] = (state[i] - coeff[i] * tmp[K - 1] % mod) % mod;
         return tmp;
     }
-    // get all primes less than or equal to n
-    public static List<int> GetPrimes(int n)
-    {
-        if (n < 3) n = 3;
-        var m = (n - 1) >> 1;
-        var primes = new List<int>((int)(n / Math.Log(n)));
-        primes.Add(2);
-        var composites = new bool[m];
-        composites[0] = false;
-        for (var p = 0; p < m; p++)
-        {
-            if (!composites[p])
-            {
-                var pnum = 2 * p + 3;
-                primes.Add(pnum);
-                for (var k = 3 * p + 3; k < m; k += pnum) composites[k] = true;
-            }
-        }
-        return primes;
-    }
+
     /// <summary>
     /// solve nx+my=1 and returns (x,y)
     /// </summary>
@@ -2548,53 +2637,7 @@ static partial class Func
         }
         return n != 1 ? null : new Tuple<long, long>(d, b);
     }
-    public static int GCD(int n, int m)
-    {
-        var a = Math.Abs(n);
-        var b = Math.Abs(m);
-        if (a < b) { var c = a; a = b; b = c; }
-        while (b > 0)
-        {
-            var c = a % b;
-            a = b;
-            b = c;
-        }
-        return a;
-    }
-    /// <summary>
-    /// 使わないで
-    /// </summary>
-    /// <param name="n"></param>
-    /// <param name="m"></param>
-    /// <returns></returns>
-    public static long GCD_oldver(long n, long m)
-    {
-        var a = Math.Abs(n);
-        var b = Math.Abs(m);
-        if (a < b) { var c = a; a = b; b = c; }
-        while (b > 0)
-        {
-            var c = a % b;
-            a = b;
-            b = c;
-        }
-        return a;
-    }
-    public static long GCD(long a, long b)
-    {
-        var n = (ulong)Math.Abs(a); var m = (ulong)Math.Abs(b);
-        if (n == 0) return (long)m; if (m == 0) return (long)n;
-        int zm = 0, zn = 0;
-        while ((n & 1) == 0) { n >>= 1; zn++; }
-        while ((m & 1) == 0) { m >>= 1; zm++; }
-        while (m != n)
-        {
-            if (m > n) { m -= n; while ((m & 1) == 0) m >>= 1; }
-            else { n -= m; while ((n & 1) == 0) n >>= 1; }
-        }
-        return (long)n << Math.Min(zm, zn);
-    }
-    public static BigInteger GCD(BigInteger a, BigInteger b) => BigInteger.GreatestCommonDivisor(a, b);
+
     public static long Inverse(long a, long mod)
     {
         if (a < 0) { a %= mod; if (a < 0) a += mod; }
