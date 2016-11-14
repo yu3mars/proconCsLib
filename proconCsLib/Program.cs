@@ -67,7 +67,7 @@ namespace Tmp
         {
             Mod a = new Mod(2);
             Mod b = new Func.Mod(3);
-            Console.WriteLine((int)(a+b));
+            Console.WriteLine((int)(a + b));
             a += b;
             Console.WriteLine((int)a);
         }
@@ -778,7 +778,7 @@ static partial class Func
     /// <param name="n"></param>
     /// <param name="m"></param>
     /// <returns></returns>
-    public static long LCM(long n, long m) => Math.Abs((n / GCD(n, m)) * m);
+    public static long LCM(long n, long m) { return Math.Abs((n / GCD(n, m)) * m); }
 
     /// <summary>
     /// n以下の素数のリストを返す (get all primes less than or equal to n)
@@ -819,13 +819,9 @@ static partial class Func
             if (n >= mod) n %= mod;
             else if (n < 0) n = (n % mod + mod) % mod;
         }
-        
+
         public static explicit operator long(Mod m) { return m.n; }
 
-        //public static bool operator ==(Mod a, Mod b) { return a.n == b.n; }
-        //public static Mod operator +=(Mod a, Mod b) { a.n += b.n; if (a.n >= mod) a.n -= mod; return a; }
-        //public static Mod operator -=(Mod a, Mod b) { a.n -= b.n; if (a.n < 0) a.n += mod; return a; }
-        //public static Mod operator *=(Mod a, Mod b) { a.n = (int)(((long)a.n* b.n) % mod); return a; }
         public static Mod operator +(Mod a, Mod b) { long tmp = a.n + b.n; if (tmp >= mod) tmp -= mod; return new Mod(tmp); }
         public static Mod operator -(Mod a, Mod b) { long tmp = a.n - b.n; if (tmp < mod) tmp += mod; return new Mod(tmp); }
         public static Mod operator *(Mod a, Mod b) { long tmp = ((a.n * b.n) % mod); return new Mod(tmp); }
@@ -843,14 +839,14 @@ static partial class Func
     }
 
 
-    static long inv(long a,long p)
+    static long inv(long a, long p)
     {
         return (a == 1 ? 1 : (1 - p * inv(p % a, a)) / a + p);
     }
 
     const int MAX_N = 1024000;
     static bool modFact_Initialized = false;
-    static Mod[] fact = new Mod[MAX_N], factinv= new Mod[MAX_N];
+    static Mod[] fact = new Mod[MAX_N], factinv = new Mod[MAX_N];
     static void init()
     {
         modFact_Initialized = true;
@@ -859,7 +855,7 @@ static partial class Func
         {
             fact[i + 1] = fact[i] * new Mod(i + 1);
             factinv[i + 1] = factinv[i] / new Mod(i + 1);
-        } 
+        }
     }
     static Mod comb(int a, int b)
     {
