@@ -871,6 +871,28 @@ static partial class Func
 }
 #endregion
 
+/// <summary>
+/// 検証済みライブラリ
+/// </summary>
+static partial class Func
+{
+    /// <summary>
+    /// 個数制限なしナップザック問題 O(NW)
+    /// </summary>
+    /// <param name="w">重さ</param>
+    /// <param name="v">価値</param>
+    /// <param name="W">ナップザックの容量</param>
+    /// <returns></returns>
+    public static int KnapsackWUnlimited(int[] w, int[] v, int W)
+    {
+        var N = w.Length;
+        var dp = new int[W + 1];
+        for (var i = 0; i < N; i++) for (var j = w[i]; j <= W; j++)
+                dp[j] = Math.Max(dp[j], v[i] + dp[j - w[i]]);
+        return dp[W];
+    }
+}
+
 #region 未整理ライブラリ
 
 interface ISegmentTree
