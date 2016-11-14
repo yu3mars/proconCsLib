@@ -851,13 +851,19 @@ static partial class Func
     {
         modFact_Initialized = true;
         fact[0] = new Mod(1); factinv[0] = new Mod(1);
-        for (int i = 0; i < MAX_N; i++)
+        for (int i = 0; i < MAX_N - 1; i++)
         {
             fact[i + 1] = fact[i] * new Mod(i + 1);
             factinv[i + 1] = factinv[i] / new Mod(i + 1);
         }
     }
-    static Mod comb(int a, int b)
+    /// <summary>
+    /// aCb (combination, 組合せ)
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static Mod comb(int a, int b)
     {
         if (modFact_Initialized == false) { init(); }
         return fact[a] * factinv[b] * factinv[a - b];
