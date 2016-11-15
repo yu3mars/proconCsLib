@@ -65,11 +65,7 @@ namespace Tmp
         /// </summary>
         void SolveOne()
         {
-            Mod a = new Mod(2);
-            Mod b = new Func.Mod(3);
-            Console.WriteLine((int)(a + b));
-            a += b;
-            Console.WriteLine((int)a);
+
         }
     }
 }
@@ -327,8 +323,8 @@ static partial class Func
 {
     public const int Inf = 1073741789;  // 2 * Inf < int.MaxValue, and Inf is a prime number
     public const long InfL = 4011686018427387913L;  // 2 * InfL < long.MaxValue, and InfL is a prime number
-    public static Comparison<T> DefaultComparison<T>() => (x, y) => Comparer<T>.Default.Compare(x, y);
-    public static Comparison<T> ToComparison<T>(this IComparer<T> comp) => comp == null ? DefaultComparison<T>() : (x, y) => comp.Compare(x, y);
+    public static Comparison<T> DefaultComparison<T>() { return (x, y) => Comparer<T>.Default.Compare(x, y); }
+    public static Comparison<T> ToComparison<T>(this IComparer<T> comp) { return comp == null ? DefaultComparison<T>() : (x, y) => comp.Compare(x, y); }
     /// <summary>
     /// Find the first number x such that pred(x) is true
     /// if pred(x) is false for all min&lt;=x&lt;max, then return max
@@ -381,8 +377,8 @@ namespace STL
     {
         Comparison<T> comp;
         List<T> list;
-        public int Count { get; private set; } = 0;
-        public bool IsEmpty => Count == 0;
+        public int Count { get; private set; }
+        public bool IsEmpty { get {return Count == 0; } }
         public PriorityQueue(IEnumerable<T> source) : this((Comparison<T>)null, 0, source) { }
         public PriorityQueue(int capacity = 0, IEnumerable<T> source = null) : this((Comparison<T>)null, capacity, source) { }
         public PriorityQueue(IComparer<T> comp, IEnumerable<T> source) : this(comp.ToComparison(), source) { }
@@ -436,21 +432,21 @@ namespace STL
         /// this is an O(1) operation
         /// </summary>
         /// <returns>the minimum</returns>
-        public T Peek() => list[0];
+        public T Peek() { return list[0]; }
         public IEnumerator<T> GetEnumerator() { var x = (PriorityQueue<T>)Clone(); while (x.Count > 0) yield return x.Dequeue(); }
         void CopyTo(Array array, int index) { foreach (var x in this) array.SetValue(x, index++); }
         public object Clone() { var x = new PriorityQueue<T>(comp, Count); x.list.AddRange(list); return x; }
         public void Clear() { list = new List<T>(); Count = 0; }
-        public void TrimExcess() => list.TrimExcess();
+        public void TrimExcess() { list.TrimExcess(); }
         /// <summary>
         /// check whether item is in this queue
         /// this is an O(n) operation
         /// </summary>
-        public bool Contains(T item) => list.Contains(item);
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        void ICollection.CopyTo(Array array, int index) => CopyTo(array, index);
-        bool ICollection.IsSynchronized => false;
-        object ICollection.SyncRoot => this;
+        public bool Contains(T item) { return list.Contains(item); }
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
+        void ICollection.CopyTo(Array array, int index) { CopyTo(array, index); }
+        bool ICollection.IsSynchronized { get { return false; } }
+        object ICollection.SyncRoot { get { return this; } }
     }
     class Deque<T>
     {
@@ -461,8 +457,8 @@ namespace STL
         public Deque() : this(16) { }
         public T this[int index] { get { return array[GetIndex(index)]; } set { array[GetIndex(index)] = value; } }
         int GetIndex(int index) { var tmp = index + offset; return tmp >= capacity ? tmp - capacity : tmp; }
-        public T PeekFront() => array[offset];
-        public T PeekBack() => array[GetIndex(Count - 1)];
+        public T PeekFront() { return array[offset]; }
+        public T PeekBack() { return array[GetIndex(Count - 1)]; }
         public void PushFront(T item)
         {
             if (Count == capacity) Extend();
@@ -484,7 +480,7 @@ namespace STL
             if (id >= capacity) id -= capacity;
             array[id] = item;
         }
-        public T PopBack() => array[GetIndex(--Count)];
+        public T PopBack() { return array[GetIndex(--Count)]; }
         public void Insert(int index, T item)
         {
             PushFront(item);
@@ -531,8 +527,8 @@ namespace STL
         public T Second;
         public Pair() { First = default(S); Second = default(T); }
         public Pair(S s, T t) { First = s; Second = t; }
-        public override string ToString() => $"({First}, {Second})";
-        public override int GetHashCode() => First.GetHashCode() ^ Second.GetHashCode();
+        public override string ToString() { return string.Format("({0}, {1})",First,Second); }
+        public override int GetHashCode() { return First.GetHashCode() ^ Second.GetHashCode(); }
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj)) return true;
