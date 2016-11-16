@@ -933,8 +933,8 @@ class SegmentTree3 : ISegmentTree
             unif[node] = 0;
         }
     }
-    void Update(int node) => seg[node] = Operator(seg[2 * node + 1], seg[2 * node + 2]);
-    public void Add(int from, int to, long value) => Add(from, to, value, 0, 0, N2);
+    void Update(int node) { seg[node] = Operator(seg[2 * node + 1], seg[2 * node + 2]); }
+    public void Add(int from, int to, long value) { Add(from, to, value, 0, 0, N2); }
     void Add(int from, int to, long value, int node, int l, int r)
     {
         if (from <= l && r <= to) unif[node] += value;
@@ -947,7 +947,7 @@ class SegmentTree3 : ISegmentTree
         LazyEvaluate(node);
     }
     public long this[int n] { get { return Min(n, n + 1); } set { Add(n, n + 1, value - this[n]); } }
-    public long Min(int from, int to) => Min(from, to, 0, 0, N2);
+    public long Min(int from, int to) { return Min(from, to, 0, 0, N2); }
     long Min(int from, int to, int node, int l, int r)
     {
         LazyEvaluate(node);
@@ -971,7 +971,7 @@ class SegmentTree : ISegmentTree
         for (var i = 0; i < a.Length; i++) seg[i + N2 - 1] = a[i];
         for (var i = N2 - 2; i >= 0; i--) seg[i] = Math.Min(seg[2 * i + 1], seg[2 * i + 2]);
     }
-    public void Add(int from, int to, long value) => Add(from, to, value, 0, 0, N2);
+    public void Add(int from, int to, long value) { Add(from, to, value, 0, 0, N2); }
     void Add(int from, int to, long value, int node, int l, int r)
     {
         if (to <= l || r <= from) return;
@@ -984,7 +984,7 @@ class SegmentTree : ISegmentTree
         }
     }
     public long this[int n] { get { return Min(n, n + 1); } set { Add(n, n + 1, value - this[n]); } }
-    public long Min(int from, int to) => Min(from, to, 0, 0, N2);
+    public long Min(int from, int to) { return Min(from, to, 0, 0, N2); }
     long Min(int from, int to, int node, int l, int r)
     {
         if (to <= l || r <= from) return Func.InfL;
@@ -1080,23 +1080,23 @@ class SkewHeap<T> : IEnumerable<T>
             yield return val;
             if (r != null) foreach (var x in r) yield return x;
         }
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     }
     public int Count { get; private set; }
     Node head;
     Comparison<T> comp;
-    public bool IsEmpty => head != null;
+    public bool IsEmpty { get { return head != null; } }
     public SkewHeap(Comparison<T> c) { comp = c; Count = 0; }
     public SkewHeap() : this(Func.DefaultComparison<T>()) { }
     public SkewHeap(IComparer<T> c) : this(Func.ToComparison(c)) { }
     private SkewHeap(Comparison<T> c, Node h) : this(c) { head = h; }
     public void Push(T x) { var n = new Node(x); head = Meld(head, n); Count++; }
-    public T Peek() => head.val;
+    public T Peek() { return head.val; }
     public T Pop() { var x = head.val; head = Meld(head.l, head.r); Count--; return x; }
     // a.comp must be equivalent to b.comp
     // a, b will be destroyed
-    public static SkewHeap<T> Meld(SkewHeap<T> a, SkewHeap<T> b) => new SkewHeap<T>(a.comp, a.Meld(a.head, b.head));
-    public void MeldWith(SkewHeap<T> a) => head = Meld(head, a.head);
+    public static SkewHeap<T> Meld(SkewHeap<T> a, SkewHeap<T> b) { return new SkewHeap<T>(a.comp, a.Meld(a.head, b.head)); }
+    public void MeldWith(SkewHeap<T> a) { head = Meld(head, a.head); }
     Node Meld(Node a, Node b)
     {
         if (a == null) return b;
@@ -1106,23 +1106,23 @@ class SkewHeap<T> : IEnumerable<T>
         Func.Swap(ref a.l, ref a.r);
         return a;
     }
-    public IEnumerator<T> GetEnumerator() => head.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => (IEnumerator)GetEnumerator();
+    public IEnumerator<T> GetEnumerator() { return head.GetEnumerator(); }
+    IEnumerator IEnumerable.GetEnumerator() { return (IEnumerator)GetEnumerator(); }
 }
 // [0, Size) の整数の集合を表す
 class BITSet : BinaryIndexedTree
 {
     public BITSet(int size) : base(size) { }
-    public void Add(int item) => Add(item, 1);
-    public bool Contains(int item) => Sum(item, item + 1) > 0;
-    public int Count(int item) => Sum(item, item + 1);
+    public void Add(int item) { Add(item, 1); }
+    public bool Contains(int item) { return Sum(item, item + 1) > 0; }
+    public int Count(int item) { return Sum(item, item + 1); }
     // 順位 = item が小さい方から何番目か(0-indexed)
-    public int GetRank(int item) => Sum(0, item);
-    public void Remove(int item) => Add(item, -1);
-    public void RemoveAll(int item) => Add(item, -Count(item));
+    public int GetRank(int item) { return Sum(0, item); }
+    public void Remove(int item) { Add(item, -1); }
+    public void RemoveAll(int item) { Add(item, -Count(item)); }
     // 0-indexed で順位が rank のものを求める
     // ない場合は Size が返る
-    public int GetValue(int rank) => Func.FirstBinary(0, Size, t => Sum(0, t + 1) >= rank + 1);
+    public int GetValue(int rank) { return Func.FirstBinary(0, Size, t => Sum(0, t + 1) >= rank + 1); }
 }
 class RangeBIT
 {
@@ -1147,8 +1147,8 @@ class RangeBIT
         Add2(1, to + 1, -value);
     }
     void Add2(int which, int i, long value) { while (i < N) { bit[which, i] += value; i += i & (-i); } }
-    long Sum(int to) => Sum2(0, to) + Sum2(1, to) * to;
-    public long Sum(int from, int to) => Sum(to) - Sum(from);
+    long Sum(int to) { return Sum2(0, to) + Sum2(1, to) * to; }
+    public long Sum(int from, int to) { return Sum(to) - Sum(from); }
     long Sum2(int which, int i) { var sum = 0L; while (i > 0) { sum += bit[which, i]; i -= i & (-i); } return sum; }
 }
 class RMQ
@@ -1176,7 +1176,7 @@ class RMQ
         }
     }
     public int this[int n] { get { return Min(n, n + 1); } set { Update(n, value); } }
-    public int Min(int from, int to) => Min(from, to, 0, 0, N2);
+    public int Min(int from, int to) { return Min(from, to, 0, 0, N2); }
     int Min(int from, int to, int node, int l, int r)
     {
         if (to <= l || r <= from) return Func.Inf;
@@ -1206,7 +1206,7 @@ class BinaryIndexedTree3D
         for (var i = x + 1; i <= X; i += i & (-i)) for (var j = y + 1; j <= Y; j += j & (-j)) for (var k = z + 1; k <= Z; k += k & (-k)) bit[i, j, k] += value;
     }
     public int Sum(int x0, int y0, int z0, int x1, int y1, int z1)
-        => Sum(x1, y1, z1) - Sum(x0, y1, z1) - Sum(x1, y0, z1) - Sum(x1, y1, z0) + Sum(x1, y0, z0) + Sum(x0, y1, z0) + Sum(x0, y0, z1) - Sum(x0, y0, z0);
+    { return Sum(x1, y1, z1) - Sum(x0, y1, z1) - Sum(x1, y0, z1) - Sum(x1, y1, z0) + Sum(x1, y0, z0) + Sum(x0, y1, z0) + Sum(x0, y0, z1) - Sum(x0, y0, z0); }
     int Sum(int x, int y, int z)
     {
         var sum = 0;
@@ -1230,7 +1230,7 @@ class BinaryIndexedTree2D
         for (var x = 0; x < X; x++) for (var y = 0; y < Y; y++) Add(x, y, array[x, y]);
     }
     public void Add(int x, int y, int value) { for (var i = x + 1; i <= X; i += i & (-i)) for (var j = y + 1; j <= Y; j += j & (-j)) bit[i, j] += value; }
-    public int Sum(int x0, int y0, int x1, int y1) => Sum(x0, y0) + Sum(x1, y1) - Sum(x0, y1) - Sum(x1, y0);
+    public int Sum(int x0, int y0, int x1, int y1) { return Sum(x0, y0) + Sum(x1, y1) - Sum(x0, y1) - Sum(x1, y0); }
     int Sum(int x, int y) { var sum = 0; for (var i = x; i > 0; i -= i & (-i)) for (var j = y; j > 0; j -= j & (-j)) sum += bit[i, j]; return sum; }
 }
 class BinaryIndexedTree
@@ -1251,7 +1251,7 @@ class BinaryIndexedTree
     public void Add(int index, int value) { for (var i = index + 1; i <= Size; i += i & (-i)) bit[i] += value; }
     // from, to is 0-indexed
     // from is inclusive, to is exclusive
-    public int Sum(int from, int to) => Sum(to) - Sum(from);
+    public int Sum(int from, int to) { return Sum(to) - Sum(from); }
     int Sum(int to) { var sum = 0; for (var i = to; i > 0; i -= i & (-i)) sum += bit[i]; return sum; }
 }
 class Amoeba
@@ -1320,11 +1320,11 @@ class AmoebaState
     public double this[int n] { get { return vec[n]; } set { vec[n] = value; } }
     public void Multiply(double r) { for (var i = 0; i < Dimension; i++) vec[i] *= r; }
     public void Add(AmoebaState v) { for (var i = 0; i < Dimension; i++) vec[i] += v.vec[i]; }
-    public static AmoebaState operator +(AmoebaState p) => new AmoebaState(p.vec);
+    public static AmoebaState operator +(AmoebaState p) { return new AmoebaState(p.vec); }
     public static AmoebaState operator -(AmoebaState p) { var tmp = new AmoebaState(p.vec); tmp.Multiply(-1); return tmp; }
     public static AmoebaState operator /(AmoebaState p, double r) { var tmp = new AmoebaState(p.vec); tmp.Multiply(1 / r); return tmp; }
     public static AmoebaState operator *(double r, AmoebaState p) { var tmp = new AmoebaState(p.vec); tmp.Multiply(r); return tmp; }
-    public static AmoebaState operator *(AmoebaState p, double r) => r * p;
+    public static AmoebaState operator *(AmoebaState p, double r) { return r * p; }
     public static AmoebaState operator +(AmoebaState p, AmoebaState q) { var tmp = +p; tmp.Add(q); return tmp; }
     public static AmoebaState operator -(AmoebaState p, AmoebaState q) { var tmp = -q; tmp.Add(p); return tmp; }
     public double Func()
@@ -1449,7 +1449,7 @@ class BucketList<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable
         if (node.Prev == null) return bucket.Prev == null ? null : new Tuple<BucketNode<T>, int>(bucket.Prev.Tail, bucket.Prev.Count - 1);
         else return new Tuple<BucketNode<T>, int>(node.Prev, index - 1);
     }
-    public Tuple<BucketNode<T>, int> UpperBound(T item) => LowerBound(x => comp(x, item) <= 0);
+    public Tuple<BucketNode<T>, int> UpperBound(T item) { return LowerBound(x => comp(x, item) <= 0); }
     // (node, index)
     // index is the position of node in node.Parent
     public Tuple<BucketNode<T>, int> LowerBound(Predicate<T> pred)
@@ -1464,7 +1464,7 @@ class BucketList<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable
         if (node.Next == null) return bucket.Next == null ? null : new Tuple<BucketNode<T>, int>(bucket.Next.Head, 0);
         else return new Tuple<BucketNode<T>, int>(node.Next, index + 1);
     }
-    public Tuple<BucketNode<T>, int> LowerBound(T item) => LowerBound(x => comp(x, item) >= 0);
+    public Tuple<BucketNode<T>, int> LowerBound(T item) { return LowerBound(x => comp(x, item) >= 0); }
     public void InitiateWith(Bucket<T> bucket)
     {
         Debug.Assert(bucket != null && bucket.Count > 0);
@@ -1485,7 +1485,7 @@ class BucketList<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable
     public void AddLast(Bucket<T> bucket) { if (NumOfBucket == 0) InitiateWith(bucket); else AddAfter(Tail, bucket); }
     public void AddFirst(T item) { if (NumOfBucket == 0) InitiateWith(item); else AddBefore(Head.Head, item); }
     public void AddLast(T item) { if (NumOfBucket == 0) InitiateWith(item); else AddAfter(Tail.Tail, item); }
-    public void Clear() => RemoveAll();
+    public void Clear() { RemoveAll(); }
     public void RemoveAll() { Head = Tail = null; NumOfBucket = 0; }
     public void RemoveFirst() { if (NumOfBucket == 0) throw new InvalidOperationException(); else Remove(Head.Head); }
     public void RemoveLast() { if (NumOfBucket == 0) throw new InvalidOperationException(); else Remove(Tail.Tail); }
@@ -1569,12 +1569,12 @@ class BucketList<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable
         }
     }
     public void Add(T item) { var ub = LowerBound(item); if (ub != null) AddBefore(ub.Item1, item); else AddLast(item); }
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     public void CopyTo(Array array, int index) { foreach (var item in this) array.SetValue(item, index++); }
-    public bool IsSynchronized => false;
-    public object SyncRoot => this;
-    public bool IsReadOnly => false;
-    public bool Contains(T item) => Find(item) != null;
+    public bool IsSynchronized { get { return false; } }
+    public object SyncRoot { get { return this; } }
+    public bool IsReadOnly { get { return false; } }
+    public bool Contains(T item) { return Find(item) != null; }
     public void CopyTo(T[] array, int index) { foreach (var item in this) array[index++] = item; }
     public override string ToString()
     {
@@ -1604,7 +1604,7 @@ class BucketList<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable
         if (bucket.Next == null) return bucket == Tail;
         else return bucket.Next.Prev == bucket && comp(bucket.Tail.Value, bucket.Next.Head.Value) <= 0;
     }
-    bool CheckBucket(Bucket<T> bucket) => bucket.Count > 0 && bucket.Count <= BucketSize && bucket.Parent == this;
+    bool CheckBucket(Bucket<T> bucket) { return bucket.Count > 0 && bucket.Count <= BucketSize && bucket.Parent == this; }
     public void Start(Func<string, T> parser, Func<T> random)
     {
         BucketNode<T> x = null, y = null;
@@ -1691,8 +1691,8 @@ class Bucket<T>
             return count;
         }
     }
-    public bool AddAfter(BucketNode<T> node, BucketNode<T> item) => AddAfter(node, item.Value);
-    public bool AddBefore(BucketNode<T> node, BucketNode<T> item) => AddBefore(node, item.Value);
+    public bool AddAfter(BucketNode<T> node, BucketNode<T> item) { return AddAfter(node, item.Value); }
+    public bool AddBefore(BucketNode<T> node, BucketNode<T> item) { return AddBefore(node, item.Value); }
     public bool AddAfter(BucketNode<T> node, T item)
     {
         Debug.Assert(node != null && node.Parent == this && Parent.comp(node.Value, item) <= 0
@@ -1733,7 +1733,7 @@ class Bucket<T>
         Count++;
         return true;
     }
-    public bool InitiateWith(T item) => InitiateWith(new BucketNode<T>(item, this, null, null));
+    public bool InitiateWith(T item) { return InitiateWith(new BucketNode<T>(item, this, null, null)); }
     public void RemoveAll() { Head = Tail = null; Count = 0; }
     public bool AddFirst(T item) { if (Count == 0) return InitiateWith(item); else return AddBefore(Head, item); }
     public bool AddLast(T item) { if (Count == 0) return InitiateWith(item); else return AddAfter(Tail, item); }
@@ -1791,7 +1791,7 @@ class Bucket<T>
         if (node.Next == null) return node == Tail;
         else return node.Next.Prev == node && Parent.comp(node.Value, node.Next.Value) <= 0;
     }
-    bool CheckNode(BucketNode<T> node) => node.Parent == this;
+    bool CheckNode(BucketNode<T> node) { return node.Parent == this; }
 }
 class BucketNode<T>
 {
@@ -1983,7 +1983,7 @@ class UndirectedGraph<V, E> : DirectedGraph<V, E>
         sb.Append("}");
         return sb.ToString();
     }
-    public override string ToString() => ToString(v => v.ToString(), e => e.ToString());
+    public override string ToString() { return ToString(v => v.ToString(), e => e.ToString()); }
 }
 class NodeInfo<V> : Pair<int, V>
 {
@@ -2006,22 +2006,22 @@ class EdgeInfo<E> : Pair<Pair<int, int>, E>
     public E Information { get { return Second; } set { Second = value; } }
     public EdgeInfo() : base() { }
     public EdgeInfo(int from, int to, E info) : base(new Pair<int, int>(from, to), info) { }
-    public EdgeInfo<E> Reverse() => new EdgeInfo<E>(To, From, Information);
+    public EdgeInfo<E> Reverse() { return new EdgeInfo<E>(To, From, Information); }
 }
 class DirectedGraph<V, E> : IEnumerable<NodeInfo<V>>
 {
     protected int numberOfNodes;
-    public int NumberOfNodes => numberOfNodes;
+    public int NumberOfNodes { get { return numberOfNodes; } }
     protected NodeInfo<V>[] nodes;
     protected List<EdgeInfo<E>> edges;
     protected List<HalfEdgeInfo<E>>[] edgesFrom;
     protected List<HalfEdgeInfo<E>>[] edgesTo;
-    public IEnumerable<HalfEdgeInfo<E>> EdgesFrom(int node) => edgesFrom[node];
-    public int InDegree(int node) => edgesTo[node].Count;
-    public int OutDegree(int node) => edgesFrom[node].Count;
-    public IEnumerable<HalfEdgeInfo<E>> EdgesTo(int node) => edgesTo[node];
+    public IEnumerable<HalfEdgeInfo<E>> EdgesFrom(int node) { return edgesFrom[node]; }
+    public int InDegree(int node) { return edgesTo[node].Count; }
+    public int OutDegree(int node) { return edgesFrom[node].Count; }
+    public IEnumerable<HalfEdgeInfo<E>> EdgesTo(int node) { return edgesTo[node]; }
     public V this[int node] { get { return nodes[node].Second; } set { nodes[node].Second = value; } }
-    public IEnumerable<EdgeInfo<E>> Edges => edges;
+    public IEnumerable<EdgeInfo<E>> Edges { get { return edges; } }
     public DirectedGraph(int V)
     {
         numberOfNodes = V;
@@ -2037,12 +2037,12 @@ class DirectedGraph<V, E> : IEnumerable<NodeInfo<V>>
         edgesFrom[edge.From].Add(new HalfEdgeInfo<E>(edge.To, edge.Information));
         edgesTo[edge.To].Add(new HalfEdgeInfo<E>(edge.From, edge.Information));
     }
-    public void AddEdge(int from, int to, E information) => AddEdge(new EdgeInfo<E>(from, to, information));
-    public void AddEdge(V from, V to, E information) => AddEdge(new EdgeInfo<E>(SearchNode(from).Code, SearchNode(to).Code, information));
-    public NodeInfo<V> SearchNode(V node) => nodes.FirstOrDefault(e => e.Information.Equals(node));
-    public EdgeInfo<E> SearchEdge(E edge) => edges.Find(e => e.Information.Equals(edge));
+    public void AddEdge(int from, int to, E information) { AddEdge(new EdgeInfo<E>(from, to, information)); }
+    public void AddEdge(V from, V to, E information) { AddEdge(new EdgeInfo<E>(SearchNode(from).Code, SearchNode(to).Code, information)); }
+    public NodeInfo<V> SearchNode(V node) { return nodes.FirstOrDefault(e => e.Information.Equals(node)); }
+    public EdgeInfo<E> SearchEdge(E edge) { return edges.Find(e => e.Information.Equals(edge)); }
     public IEnumerator<NodeInfo<V>> GetEnumerator() { foreach (var v in nodes) yield return v; }
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     public int[] ShortestPathLengthFrom(int from, Func<E, int> cost)
     {
         var d = Enumerable.Repeat(Func.Inf, numberOfNodes).ToArray();
@@ -2214,7 +2214,7 @@ class DirectedGraph<V, E> : IEnumerable<NodeInfo<V>>
         sb.Append("}");
         return sb.ToString();
     }
-    public override string ToString() => ToString(v => v.ToString(), e => e.ToString());
+    public override string ToString() { return ToString(v => v.ToString(), e => e.ToString()); }
 }
 class UnionFindTree
 {
@@ -2228,8 +2228,8 @@ class UnionFindTree
         size = new int[N];
         for (var i = 0; i < N; i++) { parent[i] = i; size[i] = 1; }
     }
-    public int GetSize(int x) => size[GetRootOf(x)];
-    public int GetRootOf(int x) => parent[x] == x ? x : parent[x] = GetRootOf(parent[x]);
+    public int GetSize(int x) { return size[GetRootOf(x)]; }
+    public int GetRootOf(int x) { return parent[x] == x ? x : parent[x] = GetRootOf(parent[x]); }
     public bool UniteCategory(int x, int y)
     {
         if ((x = GetRootOf(x)) == (y = GetRootOf(y))) return false;
@@ -2241,7 +2241,7 @@ class UnionFindTree
         }
         return true;
     }
-    public bool IsSameCategory(int x, int y) => GetRootOf(x) == GetRootOf(y);
+    public bool IsSameCategory(int x, int y) { return GetRootOf(x) == GetRootOf(y); }
 }
 class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
 {
@@ -2249,8 +2249,8 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
     {
         AVLTree<T> tree;
         int height;
-        public int Height => height;
-        public int Bias => Left.height - Right.height;
+        public int Height { get { return height; } }
+        public int Bias { get { return Left.height - Right.height; } }
         public T Item;
         public AVLNode Parent;
         public AVLNode Left;
@@ -2258,7 +2258,7 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
         AVLNode(T x, AVLTree<T> tree) { this.tree = tree; Item = x; Left = tree.sentinel; Right = tree.sentinel; }
         public AVLNode(AVLTree<T> tree) : this(default(T), tree) { height = 0; Parent = null; }
         public AVLNode(T x, AVLNode parent, AVLTree<T> tree) : this(x, tree) { height = 1; Parent = parent; }
-        public void Adjust() => height = 1 + Math.Max(Left.height, Right.height);
+        public void Adjust() { height = 1 + Math.Max(Left.height, Right.height); }
         public void ResetAsSentinel() { height = 0; Left = tree.sentinel; Right = tree.sentinel; }
         public IEnumerator<T> GetEnumerator()
         {
@@ -2269,7 +2269,7 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
                 foreach (var x in Right) yield return x;
             }
         }
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     }
     AVLNode sentinel;
     Comparison<T> comp;
@@ -2390,7 +2390,7 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
         }
         return false;
     }
-    public bool Remove(T item) => Remove(item, sentinel.Left);
+    public bool Remove(T item) { return Remove(item, sentinel.Left); }
     AVLNode Max(AVLNode node)
     {
         while (node.Right != sentinel) node = node.Right;
@@ -2425,8 +2425,8 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
     }
     public AVLNode LowerBound(Predicate<T> pred) { AVLNode node; LowerBound(pred, sentinel.Left, out node); return node; }
     public AVLNode UpperBound(Predicate<T> pred) { AVLNode node; UpperBound(pred, sentinel.Left, out node); return node; }
-    public AVLNode LowerBound(T item) => LowerBound(x => comp(x, item) >= 0);
-    public AVLNode UpperBound(T item) => UpperBound(x => comp(x, item) <= 0);
+    public AVLNode LowerBound(T item) { return LowerBound(x => comp(x, item) >= 0); }
+    public AVLNode UpperBound(T item) { return UpperBound(x => comp(x, item) <= 0); }
     bool UpperBound(Predicate<T> pred, AVLNode node, out AVLNode res)
     {
         if (node == sentinel) { res = null; return false; }
@@ -2439,20 +2439,20 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
         if (pred(node.Item)) { if (!LowerBound(pred, node.Left, out res)) res = node; return true; }
         else return LowerBound(pred, node.Right, out res);
     }
-    public T Min() => Min(sentinel.Left).Item;
-    public AVLNode MinNode() => Min(sentinel.Left);
-    public T Max() => Max(sentinel.Left).Item;
-    public AVLNode MaxNode() => Max(sentinel.Left);
-    public bool IsEmpty => sentinel.Left == sentinel;
+    public T Min() { return Min(sentinel.Left).Item; }
+    public AVLNode MinNode() { return Min(sentinel.Left); }
+    public T Max() { return Max(sentinel.Left).Item; }
+    public AVLNode MaxNode() { return Max(sentinel.Left); }
+    public bool IsEmpty { get { return sentinel.Left == sentinel; } }
     public void Clear() { sentinel.Left = sentinel; count = 0; sentinel.ResetAsSentinel(); }
-    public IEnumerator<T> GetEnumerator() => sentinel.Left.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public IEnumerator<T> GetEnumerator() { return sentinel.Left.GetEnumerator(); }
+    IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     public void CopyTo(T[] array, int arrayIndex) { foreach (var x in this) array[arrayIndex++] = x; }
-    public int Count => count;
-    public bool IsReadOnly => true;
+    public int Count { get { return count; } }
+    public bool IsReadOnly { get { return true; } }
     public void CopyTo(Array array, int index) { foreach (var x in this) array.SetValue(x, index++); }
-    public bool IsSynchronized => false;
-    public object SyncRoot => this;
+    public bool IsSynchronized { get { return false; } }
+    public object SyncRoot { get { return this; } }
     public override string ToString()
     {
         var nodes = new StringBuilder();
@@ -2469,14 +2469,16 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
         ConcatSubTree(nodes, edges, node.Left, $"{code}L");
         ConcatSubTree(nodes, edges, node.Right, $"{code}R");
     }
-    public bool IsBalanced() => IsBalanced(sentinel.Left);
-    public bool IsValidBinarySearchTree() => IsValidBinarySearchTree(sentinel.Left);
-    bool IsBalanced(AVLNode node) => node == sentinel || (Math.Abs(node.Bias) < 2 && IsBalanced(node.Left) && IsBalanced(node.Right));
+    public bool IsBalanced() { return IsBalanced(sentinel.Left); }
+    public bool IsValidBinarySearchTree() { return IsValidBinarySearchTree(sentinel.Left); }
+    bool IsBalanced(AVLNode node) { return node == sentinel || (Math.Abs(node.Bias) < 2 && IsBalanced(node.Left) && IsBalanced(node.Right)); }
     bool IsValidBinarySearchTree(AVLNode node)
-        => node == sentinel || (Small(node.Item, node.Left) && Large(node.Item, node.Right)
-            && IsValidBinarySearchTree(node.Left) && IsValidBinarySearchTree(node.Right));
-    bool Small(T item, AVLNode node) => node == sentinel || (comp(item, node.Item) >= 0 && Small(item, node.Left) && Small(item, node.Right));
-    bool Large(T item, AVLNode node) => node == sentinel || (comp(item, node.Item) <= 0 && Large(item, node.Left) && Large(item, node.Right));
+    {
+        return node == sentinel || (Small(node.Item, node.Left) && Large(node.Item, node.Right)
+               && IsValidBinarySearchTree(node.Left) && IsValidBinarySearchTree(node.Right));
+    }
+    bool Small(T item, AVLNode node) { return node == sentinel || (comp(item, node.Item) >= 0 && Small(item, node.Left) && Small(item, node.Right)); }
+    bool Large(T item, AVLNode node) { return node == sentinel || (comp(item, node.Item) <= 0 && Large(item, node.Left) && Large(item, node.Right)); }
     public static void CheckAVL(Random rand, int N)
     {
         Comparison<double> comp = (x, y) => x.CompareTo(y);
@@ -2528,13 +2530,13 @@ class PointInt : Pair<int, int>
         yield return new PointInt(X + 1, Y);
         yield return new PointInt(X + 1, Y + 1);
     }
-    public static PointInt operator +(PointInt p) => new PointInt(p.X, p.Y);
-    public static PointInt operator -(PointInt p) => new PointInt(-p.X, -p.Y);
-    public static PointInt operator /(PointInt p, int r) => new PointInt(p.X / r, p.Y / r);
-    public static PointInt operator *(int r, PointInt p) => new PointInt(p.X * r, p.Y * r);
-    public static PointInt operator *(PointInt p, int r) => new PointInt(p.X * r, p.Y * r);
-    public static PointInt operator +(PointInt p, PointInt q) => new PointInt(p.X + q.X, p.Y + q.Y);
-    public static PointInt operator -(PointInt p, PointInt q) => new PointInt(p.X - q.X, p.Y - q.Y);
+    public static PointInt operator +(PointInt p) { return new PointInt(p.X, p.Y); }
+    public static PointInt operator -(PointInt p) { return new PointInt(-p.X, -p.Y); }
+    public static PointInt operator /(PointInt p, int r) { return new PointInt(p.X / r, p.Y / r); }
+    public static PointInt operator *(int r, PointInt p) { return new PointInt(p.X * r, p.Y * r); }
+    public static PointInt operator *(PointInt p, int r) { return new PointInt(p.X * r, p.Y * r); }
+    public static PointInt operator +(PointInt p, PointInt q) { return new PointInt(p.X + q.X, p.Y + q.Y); }
+    public static PointInt operator -(PointInt p, PointInt q) { return new PointInt(p.X - q.X, p.Y - q.Y); }
 }
 #endregion
 
