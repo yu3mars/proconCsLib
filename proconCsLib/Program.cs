@@ -9,8 +9,6 @@ using System.Text;
 
 using Problem = Tmp.Problem;
 using MyIO;
-using STL;
-using static Geometry.Geometry3D;
 
 //#pragma warning disable   //for AOJ
 
@@ -371,329 +369,329 @@ static partial class Func
 /// <summary>
 /// C++のSTLを再実装
 /// </summary>
-namespace STL
+#region STL
+class PriorityQueue<T> : IEnumerable<T>, ICollection, IEnumerable, ICloneable
 {
-    class PriorityQueue<T> : IEnumerable<T>, ICollection, IEnumerable, ICloneable
+    Comparison<T> comp;
+    List<T> list;
+    public int Count { get; private set; }
+    public bool IsEmpty { get { return Count == 0; } }
+    public PriorityQueue(IEnumerable<T> source) : this((Comparison<T>)null, 0, source) { }
+    public PriorityQueue(int capacity = 0, IEnumerable<T> source = null) : this((Comparison<T>)null, capacity, source) { }
+    public PriorityQueue(IComparer<T> comp, IEnumerable<T> source) : this(comp.ToComparison(), source) { }
+    public PriorityQueue(IComparer<T> comp, int capacity = 0, IEnumerable<T> source = null) : this(comp.ToComparison(), source) { list.Capacity = capacity; }
+    public PriorityQueue(Comparison<T> comp, IEnumerable<T> source) : this(comp, 0, source) { }
+    public PriorityQueue(Comparison<T> comp, int capacity = 0, IEnumerable<T> source = null) { this.comp = comp == null ? Func.DefaultComparison<T>() : comp; list = new List<T>(capacity); if (source != null) foreach (var x in source) Enqueue(x); }
+    /// <summary>
+    /// add an item
+    /// this is an O(log n) operation
+    /// </summary>
+    /// <param name="x">item</param>
+    public void Enqueue(T x)
     {
-        Comparison<T> comp;
-        List<T> list;
-        public int Count { get; private set; }
-        public bool IsEmpty { get {return Count == 0; } }
-        public PriorityQueue(IEnumerable<T> source) : this((Comparison<T>)null, 0, source) { }
-        public PriorityQueue(int capacity = 0, IEnumerable<T> source = null) : this((Comparison<T>)null, capacity, source) { }
-        public PriorityQueue(IComparer<T> comp, IEnumerable<T> source) : this(comp.ToComparison(), source) { }
-        public PriorityQueue(IComparer<T> comp, int capacity = 0, IEnumerable<T> source = null) : this(comp.ToComparison(), source) { list.Capacity = capacity; }
-        public PriorityQueue(Comparison<T> comp, IEnumerable<T> source) : this(comp, 0, source) { }
-        public PriorityQueue(Comparison<T> comp, int capacity = 0, IEnumerable<T> source = null) { this.comp = comp == null ? Func.DefaultComparison<T>() : comp; list = new List<T>(capacity); if (source != null) foreach (var x in source) Enqueue(x); }
-        /// <summary>
-        /// add an item
-        /// this is an O(log n) operation
-        /// </summary>
-        /// <param name="x">item</param>
-        public void Enqueue(T x)
+        var pos = Count++;
+        list.Add(x);
+        while (pos > 0)
         {
-            var pos = Count++;
-            list.Add(x);
-            while (pos > 0)
-            {
-                var p = (pos - 1) / 2;
-                if (comp(list[p], x) <= 0) break;
-                list[pos] = list[p];
-                pos = p;
-            }
-            list[pos] = x;
+            var p = (pos - 1) / 2;
+            if (comp(list[p], x) <= 0) break;
+            list[pos] = list[p];
+            pos = p;
         }
-        /// <summary>
-        /// return the minimum element and remove it
-        /// this is an O(log n) operation
-        /// </summary>
-        /// <returns>the minimum</returns>
-        public T Dequeue()
-        {
-            var value = list[0];
-            var x = list[--Count];
-            list.RemoveAt(Count);
-            if (Count == 0) return value;
-            var pos = 0;
-            while (pos * 2 + 1 < Count)
-            {
-                var a = 2 * pos + 1;
-                var b = 2 * pos + 2;
-                if (b < Count && comp(list[b], list[a]) < 0) a = b;
-                if (comp(list[a], x) >= 0) break;
-                list[pos] = list[a];
-                pos = a;
-            }
-            list[pos] = x;
-            return value;
-        }
-        /// <summary>
-        /// look at the minimum element
-        /// this is an O(1) operation
-        /// </summary>
-        /// <returns>the minimum</returns>
-        public T Peek() { return list[0]; }
-        public IEnumerator<T> GetEnumerator() { var x = (PriorityQueue<T>)Clone(); while (x.Count > 0) yield return x.Dequeue(); }
-        void CopyTo(Array array, int index) { foreach (var x in this) array.SetValue(x, index++); }
-        public object Clone() { var x = new PriorityQueue<T>(comp, Count); x.list.AddRange(list); return x; }
-        public void Clear() { list = new List<T>(); Count = 0; }
-        public void TrimExcess() { list.TrimExcess(); }
-        /// <summary>
-        /// check whether item is in this queue
-        /// this is an O(n) operation
-        /// </summary>
-        public bool Contains(T item) { return list.Contains(item); }
-        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
-        void ICollection.CopyTo(Array array, int index) { CopyTo(array, index); }
-        bool ICollection.IsSynchronized { get { return false; } }
-        object ICollection.SyncRoot { get { return this; } }
+        list[pos] = x;
     }
-    class Deque<T>
+    /// <summary>
+    /// return the minimum element and remove it
+    /// this is an O(log n) operation
+    /// </summary>
+    /// <returns>the minimum</returns>
+    public T Dequeue()
     {
-        T[] array;
-        int offset, capacity;
-        public int Count { get; protected set; }
-        public Deque(int capacity) { array = new T[this.capacity = capacity]; Count = 0; offset = 0; }
-        public Deque() : this(16) { }
-        public T this[int index] { get { return array[GetIndex(index)]; } set { array[GetIndex(index)] = value; } }
-        int GetIndex(int index) { var tmp = index + offset; return tmp >= capacity ? tmp - capacity : tmp; }
-        public T PeekFront() { return array[offset]; }
-        public T PeekBack() { return array[GetIndex(Count - 1)]; }
-        public void PushFront(T item)
+        var value = list[0];
+        var x = list[--Count];
+        list.RemoveAt(Count);
+        if (Count == 0) return value;
+        var pos = 0;
+        while (pos * 2 + 1 < Count)
         {
-            if (Count == capacity) Extend();
-            if (--offset < 0) offset += array.Length;
-            array[offset] = item;
-            Count++;
+            var a = 2 * pos + 1;
+            var b = 2 * pos + 2;
+            if (b < Count && comp(list[b], list[a]) < 0) a = b;
+            if (comp(list[a], x) >= 0) break;
+            list[pos] = list[a];
+            pos = a;
         }
-        public T PopFront()
-        {
-            Count--;
-            var tmp = array[offset++];
-            if (offset >= capacity) offset -= capacity;
-            return tmp;
-        }
-        public void PushBack(T item)
-        {
-            if (Count == capacity) Extend();
-            var id = (Count++) + offset;
-            if (id >= capacity) id -= capacity;
-            array[id] = item;
-        }
-        public T PopBack() { return array[GetIndex(--Count)]; }
-        public void Insert(int index, T item)
-        {
-            PushFront(item);
-            for (var i = 0; i < index; i++) this[i] = this[i + 1];
-            this[index] = item;
-        }
-        public T RemoveAt(int index)
-        {
-            var tmp = this[index];
-            for (var i = index; i > 0; i--) this[i] = this[i - 1];
-            PopFront();
-            return tmp;
-        }
-        void Extend()
-        {
-            var newArray = new T[capacity << 1];
-            if (offset > capacity - Count)
-            {
-                var length = array.Length - offset;
-                Array.Copy(array, offset, newArray, 0, length);
-                Array.Copy(array, 0, newArray, length, Count - length);
-            }
-            else Array.Copy(array, offset, newArray, 0, Count);
-            array = newArray;
-            offset = 0;
-            capacity <<= 1;
-        }
+        list[pos] = x;
+        return value;
     }
-    class PairComparer<S, T> : IComparer<Pair<S, T>>
-        where S : IComparable<S>
-        where T : IComparable<T>
+    /// <summary>
+    /// look at the minimum element
+    /// this is an O(1) operation
+    /// </summary>
+    /// <returns>the minimum</returns>
+    public T Peek() { return list[0]; }
+    public IEnumerator<T> GetEnumerator() { var x = (PriorityQueue<T>)Clone(); while (x.Count > 0) yield return x.Dequeue(); }
+    void CopyTo(Array array, int index) { foreach (var x in this) array.SetValue(x, index++); }
+    public object Clone() { var x = new PriorityQueue<T>(comp, Count); x.list.AddRange(list); return x; }
+    public void Clear() { list = new List<T>(); Count = 0; }
+    public void TrimExcess() { list.TrimExcess(); }
+    /// <summary>
+    /// check whether item is in this queue
+    /// this is an O(n) operation
+    /// </summary>
+    public bool Contains(T item) { return list.Contains(item); }
+    IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
+    void ICollection.CopyTo(Array array, int index) { CopyTo(array, index); }
+    bool ICollection.IsSynchronized { get { return false; } }
+    object ICollection.SyncRoot { get { return this; } }
+}
+class Deque<T>
+{
+    T[] array;
+    int offset, capacity;
+    public int Count { get; protected set; }
+    public Deque(int capacity) { array = new T[this.capacity = capacity]; Count = 0; offset = 0; }
+    public Deque() : this(16) { }
+    public T this[int index] { get { return array[GetIndex(index)]; } set { array[GetIndex(index)] = value; } }
+    int GetIndex(int index) { var tmp = index + offset; return tmp >= capacity ? tmp - capacity : tmp; }
+    public T PeekFront() { return array[offset]; }
+    public T PeekBack() { return array[GetIndex(Count - 1)]; }
+    public void PushFront(T item)
     {
-        public PairComparer() { }
-        public int Compare(Pair<S, T> x, Pair<S, T> y)
-        {
-            var p = x.First.CompareTo(y.First);
-            if (p != 0) return p;
-            else return x.Second.CompareTo(y.Second);
-        }
+        if (Count == capacity) Extend();
+        if (--offset < 0) offset += array.Length;
+        array[offset] = item;
+        Count++;
     }
-    class Pair<S, T>
+    public T PopFront()
     {
-        public S First;
-        public T Second;
-        public Pair() { First = default(S); Second = default(T); }
-        public Pair(S s, T t) { First = s; Second = t; }
-        public override string ToString() { return string.Format("({0}, {1})",First,Second); }
-        public override int GetHashCode() { return First.GetHashCode() ^ Second.GetHashCode(); }
-        public override bool Equals(object obj)
+        Count--;
+        var tmp = array[offset++];
+        if (offset >= capacity) offset -= capacity;
+        return tmp;
+    }
+    public void PushBack(T item)
+    {
+        if (Count == capacity) Extend();
+        var id = (Count++) + offset;
+        if (id >= capacity) id -= capacity;
+        array[id] = item;
+    }
+    public T PopBack() { return array[GetIndex(--Count)]; }
+    public void Insert(int index, T item)
+    {
+        PushFront(item);
+        for (var i = 0; i < index; i++) this[i] = this[i + 1];
+        this[index] = item;
+    }
+    public T RemoveAt(int index)
+    {
+        var tmp = this[index];
+        for (var i = index; i > 0; i--) this[i] = this[i - 1];
+        PopFront();
+        return tmp;
+    }
+    void Extend()
+    {
+        var newArray = new T[capacity << 1];
+        if (offset > capacity - Count)
         {
-            if (ReferenceEquals(this, obj)) return true;
-            else if (obj == null) return false;
-            var tmp = obj as Pair<S, T>;
-            return (object)tmp != null && First.Equals(tmp.First) && Second.Equals(tmp.Second);
+            var length = array.Length - offset;
+            Array.Copy(array, offset, newArray, 0, length);
+            Array.Copy(array, 0, newArray, length, Count - length);
         }
+        else Array.Copy(array, offset, newArray, 0, Count);
+        array = newArray;
+        offset = 0;
+        capacity <<= 1;
     }
 }
+class PairComparer<S, T> : IComparer<Pair<S, T>>
+    where S : IComparable<S>
+    where T : IComparable<T>
+{
+    public PairComparer() { }
+    public int Compare(Pair<S, T> x, Pair<S, T> y)
+    {
+        var p = x.First.CompareTo(y.First);
+        if (p != 0) return p;
+        else return x.Second.CompareTo(y.Second);
+    }
+}
+class Pair<S, T>
+{
+    public S First;
+    public T Second;
+    public Pair() { First = default(S); Second = default(T); }
+    public Pair(S s, T t) { First = s; Second = t; }
+    public override string ToString() { return string.Format("({0}, {1})", First, Second); }
+    public override int GetHashCode() { return First.GetHashCode() ^ Second.GetHashCode(); }
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        else if (obj == null) return false;
+        var tmp = obj as Pair<S, T>;
+        return (object)tmp != null && First.Equals(tmp.First) && Second.Equals(tmp.Second);
+    }
+}
+#endregion //STL
 
 /// <summary>
 /// 幾何ライブラリ
 /// </summary>
-namespace Geometry
+#region Geometry
+
+
+#region 3次元幾何
+
+
+/// <summary>
+/// 3次元幾何
+/// </summary>
+static class Geometry3D
 {
-    #region 3次元幾何
-
-
+    public static double Eps = 1e-8;
+    public static double Inf = 1e12;
     /// <summary>
-    /// 3次元幾何
+    /// 点/ベクトル(3次元)
     /// </summary>
-    static class Geometry3D
+    public struct Point3D
     {
-        public static double Eps = 1e-8;
-        public static double Inf = 1e12;
-        /// <summary>
-        /// 点/ベクトル(3次元)
-        /// </summary>
-        public struct Point3D
-        {
-            public double X;
-            public double Y;
-            public double Z;
-            public Point3D(double x, double y, double z) { X = x; Y = y; Z = z; }
-            public Point3D(double[] ls) { X = ls[0]; Y = ls[1]; Z = ls[2]; }
+        public double X;
+        public double Y;
+        public double Z;
+        public Point3D(double x, double y, double z) { X = x; Y = y; Z = z; }
+        public Point3D(double[] ls) { X = ls[0]; Y = ls[1]; Z = ls[2]; }
 
-            public static Point3D operator +(Point3D p) { return new Point3D(p.X, p.Y, p.Z); }
-            public static Point3D operator -(Point3D p) { return new Point3D(-p.X, -p.Y, -p.Z); }
-            public static Point3D operator /(Point3D p, double r) { return new Point3D(p.X / r, p.Y / r, p.Z / r); }
-            public static Point3D operator *(double r, Point3D p) { return new Point3D(p.X * r, p.Y * r, p.Z * r); }
-            public static Point3D operator *(Point3D p, double r) { return new Point3D(p.X * r, p.Y * r, p.Z * r); }
-            public static Point3D operator +(Point3D p, Point3D q) { return new Point3D(p.X + q.X, p.Y + q.Y, p.Z + q.Z); }
-            public static Point3D operator -(Point3D p, Point3D q) { return new Point3D(p.X - q.X, p.Y - q.Y, p.Z - q.Z); }
-        }
-
-        /// <summary>
-        /// 線分/直線(3次元)
-        /// </summary>
-        public struct Line3D
-        {
-            public Point3D a, b;
-            public Line3D(Point3D a, Point3D b) { this.a = a; this.b = b; }
-        }
-
-        /// <summary>
-        /// 内積
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static double dot(Point3D a, Point3D b)
-        {
-            return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-        }
-
-        /// <summary>
-        /// 外積
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static Point3D cross(Point3D a, Point3D b)
-        {
-            return new Point3D(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X);
-        }
-
-        public static double norm(Point3D a)
-        {
-            return dot(a, a);
-        }
-
-        public static double dist(Point3D a)
-        {
-            return Math.Sqrt(norm(a));
-        }
-
-        #region line
-        /// <summary>
-        /// 点が線分上にあるか
-        /// </summary>
-        /// <param name="l">線分</param>
-        /// <param name="p">点</param>
-        /// <returns></returns>
-        public static bool is_in_segment(Line3D l, Point3D p)
-        {
-            return Math.Abs(dist(l.a - p) + dist(l.b - p) - dist(l.a - l.b)) < Eps;
-        }
-
-        /// <summary>
-        /// 点の射影(点から直線に引いた垂線と線分の交点)
-        /// </summary>
-        /// <param name="l">直線</param>
-        /// <param name="p">点</param>
-        /// <returns></returns>
-        public static Point3D project_lp(Line3D l, Point3D p)
-        {
-            Point3D point = l.a, vec = l.b - l.a;
-            return point + dot(p - point, vec) / norm(vec) * vec;
-        }
-
-        /// <summary>
-        /// 点と直線の距離
-        /// </summary>
-        /// <param name="l">直線</param>
-        /// <param name="p">点</param>
-        /// <returns></returns>
-        public static double distance_lp(Line3D l, Point3D p)
-        {
-            return dist(p - project_lp(l, p));
-        }
-
-        /// <summary>
-        /// 点と線分の距離
-        /// </summary>
-        /// <param name="l">線分</param>
-        /// <param name="p">点</param>
-        /// <returns></returns>
-        public static double distance_sp(Line3D l, Point3D p)
-        {
-            Point3D proj = project_lp(l, p);
-            if (is_in_segment(l, proj))
-            {
-                return dist(p - proj);
-            }
-            else
-            {
-                return Math.Min(dist(p - l.a), dist(p - l.b));
-            }
-        }
-
-        /// <summary>
-        /// 直線と直線の距離
-        /// </summary>
-        /// <param name="l"></param>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        public static double distance_ll(Line3D l, Line3D m)
-        {
-            Point3D v = cross(l.b - l.a, m.b - m.a), p = m.a - l.a;
-            if (dist(v) < Eps)
-            {
-                return distance_lp(l, m.a);
-            }
-            else
-            {
-                return Math.Abs(dot(v, p)) / dist(v);
-            }
-        }
-        #endregion
-
-        //TODO Plane関連以下の実装
+        public static Point3D operator +(Point3D p) { return new Point3D(p.X, p.Y, p.Z); }
+        public static Point3D operator -(Point3D p) { return new Point3D(-p.X, -p.Y, -p.Z); }
+        public static Point3D operator /(Point3D p, double r) { return new Point3D(p.X / r, p.Y / r, p.Z / r); }
+        public static Point3D operator *(double r, Point3D p) { return new Point3D(p.X * r, p.Y * r, p.Z * r); }
+        public static Point3D operator *(Point3D p, double r) { return new Point3D(p.X * r, p.Y * r, p.Z * r); }
+        public static Point3D operator +(Point3D p, Point3D q) { return new Point3D(p.X + q.X, p.Y + q.Y, p.Z + q.Z); }
+        public static Point3D operator -(Point3D p, Point3D q) { return new Point3D(p.X - q.X, p.Y - q.Y, p.Z - q.Z); }
     }
 
+    /// <summary>
+    /// 線分/直線(3次元)
+    /// </summary>
+    public struct Line3D
+    {
+        public Point3D a, b;
+        public Line3D(Point3D a, Point3D b) { this.a = a; this.b = b; }
+    }
+
+    /// <summary>
+    /// 内積
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static double dot(Point3D a, Point3D b)
+    {
+        return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+    }
+
+    /// <summary>
+    /// 外積
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static Point3D cross(Point3D a, Point3D b)
+    {
+        return new Point3D(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X);
+    }
+
+    public static double norm(Point3D a)
+    {
+        return dot(a, a);
+    }
+
+    public static double dist(Point3D a)
+    {
+        return Math.Sqrt(norm(a));
+    }
+
+    #region line
+    /// <summary>
+    /// 点が線分上にあるか
+    /// </summary>
+    /// <param name="l">線分</param>
+    /// <param name="p">点</param>
+    /// <returns></returns>
+    public static bool is_in_segment(Line3D l, Point3D p)
+    {
+        return Math.Abs(dist(l.a - p) + dist(l.b - p) - dist(l.a - l.b)) < Eps;
+    }
+
+    /// <summary>
+    /// 点の射影(点から直線に引いた垂線と線分の交点)
+    /// </summary>
+    /// <param name="l">直線</param>
+    /// <param name="p">点</param>
+    /// <returns></returns>
+    public static Point3D project_lp(Line3D l, Point3D p)
+    {
+        Point3D point = l.a, vec = l.b - l.a;
+        return point + dot(p - point, vec) / norm(vec) * vec;
+    }
+
+    /// <summary>
+    /// 点と直線の距離
+    /// </summary>
+    /// <param name="l">直線</param>
+    /// <param name="p">点</param>
+    /// <returns></returns>
+    public static double distance_lp(Line3D l, Point3D p)
+    {
+        return dist(p - project_lp(l, p));
+    }
+
+    /// <summary>
+    /// 点と線分の距離
+    /// </summary>
+    /// <param name="l">線分</param>
+    /// <param name="p">点</param>
+    /// <returns></returns>
+    public static double distance_sp(Line3D l, Point3D p)
+    {
+        Point3D proj = project_lp(l, p);
+        if (is_in_segment(l, proj))
+        {
+            return dist(p - proj);
+        }
+        else
+        {
+            return Math.Min(dist(p - l.a), dist(p - l.b));
+        }
+    }
+
+    /// <summary>
+    /// 直線と直線の距離
+    /// </summary>
+    /// <param name="l"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
+    public static double distance_ll(Line3D l, Line3D m)
+    {
+        Point3D v = cross(l.b - l.a, m.b - m.a), p = m.a - l.a;
+        if (dist(v) < Eps)
+        {
+            return distance_lp(l, m.a);
+        }
+        else
+        {
+            return Math.Abs(dot(v, p)) / dist(v);
+        }
+    }
     #endregion
+
+    //TODO Plane関連以下の実装
 }
+
+#endregion //3次元幾何
+#endregion //Geometry
 
 
 #region MyMath
