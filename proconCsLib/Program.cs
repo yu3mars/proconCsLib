@@ -10,6 +10,8 @@ using System.Text;
 using Problem = Tmp.Problem;
 using MyIO;
 
+using Point = System.Numerics.Complex;
+
 //#pragma warning disable   //for AOJ
 
 namespace Tmp
@@ -540,9 +542,152 @@ class Pair<S, T>
 /// 幾何ライブラリ
 /// </summary>
 #region Geometry
+#region Geometry/2次元幾何
+#region Geometry/2次元幾何/Point
+
+class MyPoint : MyComplex
+{
+    public MyPoint(double a, double b) : base(a, b)
+    {
+    }
+}
+
+public class MyComplex
+{
+    double re;
+    double im;
+    public static Complex I = new Complex(0, 1);
+    public double Re
+    {
+        get { return this.re; }
+        set { this.re = value; }
+    }
+    public double Im
+    {
+        get { return this.im; }
+        set { this.im = value; }
+    }
+    public MyComplex(double a, double b)
+    {
+        re = a; im = b;
+    }
+
+    public static implicit operator MyComplex(double a)
+    {
+        return new MyComplex(a, 0);
+    }
+    public static MyComplex operator +(MyComplex a, MyComplex b)
+    {
+        return new MyComplex(a.Re + b.Re, a.Im + b.Im);
+    }
+    public static MyComplex operator -(MyComplex a, MyComplex b)
+    {
+        return new MyComplex(a.Re - b.Re, a.Im - b.Im);
+    }
+    public static MyComplex operator *(MyComplex a, MyComplex b)
+    {
+        return new MyComplex(a.Re * b.Re - a.Im * b.Im, a.Re * b.Im + a.Im * b.Re);
+    }
+    public static MyComplex operator /(MyComplex a, MyComplex b)
+    {
+        return a * (1.0 / b.Abs2) * ~b;
+    }
+    public static MyComplex operator ~(MyComplex a)
+    {
+        return new MyComplex(a.Re, -a.Im);
+    }
+    public double Abs
+    {
+        get { return Math.Sqrt(this.Abs2); }
+    }
+    public double Abs2
+    {
+        get { return re * re + im * im; }
+    }
+    public double Arg
+    {
+        get { return Math.Atan2(im, re); }
+    }
+    public override String ToString()
+    {
+        return this.Re.ToString() + "," + this.Im.ToString();
+    }
+    public static MyComplex Exp(MyComplex a)
+    {
+        return Math.Exp(a.Re) * (new MyComplex(Math.Cos(a.Im), Math.Sin(a.Im)));
+    }
+}
+
+public class Line
+{
+    public Point a;
+    public Point b;
+
+    public Line(Point a, Point b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+}
+public class Circle
+{
+    public Point p;
+    public double r;
+    public Circle(Point p, double r)
+    {
+        this.p = p;
+        this.r = r;
+    }
+}
+#endregion Geometry/2次元幾何/Point
+
+static class Geometry
+{
+    #region Geometry/2次元幾何/基本セット
+    const double Eps = 1e-8;
+    /// <summary>
+    /// 内積
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static double dot(Point a, Point b) { return (Point.Conjugate(a) * b).Real; }
+
+    /// <summary>
+    /// 外積
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static double cross(Point a, Point b) { return (Point.Conjugate(a) * b).Imaginary; }
+
+    // TODO operator < の実装
+
+    /// <summary>
+    /// 3点の位置関係を返す。 ccw(abcが反時計周り):1 cw(abcが時計周り):-1 c-a-bが直線:2 a-b-cが直線:-2 a-c-bが直線:0
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="c"></param>
+    /// <returns></returns>
+    static int ccw(Point a, Point b, Point c)
+    {
+        b -= a;
+        c -= a;
+        if (cross(b, c) > Eps) return 1; // counter clockwise
+        if (cross(b, c) < -Eps) return -1; // clockwise
+        if (dot(b, c) < 0) return 2; // c--a--b on line
+        if (b.Magnitude < c.Magnitude) return -2; // a--b--c on line
+        return 0; // a--c--b on line
+    }
+
+    #endregion Geometry/2次元幾何/基本セット
+
+}
 
 
-#region 3次元幾何
+#endregion Geometry/2次元幾何
+#region Geometry/3次元幾何
 
 
 /// <summary>
@@ -690,8 +835,8 @@ static class Geometry3D
     //TODO Plane関連以下の実装
 }
 
-#endregion //3次元幾何
-#endregion //Geometry
+#endregion Geometry/3次元幾何
+#endregion Geometry
 
 
 #region MyMath
@@ -890,7 +1035,7 @@ static partial class Func
 }
 
 #region 未整理ライブラリ
-
+#region グラフ
 interface ISegmentTree
 {
     void Add(int from, int to, long value);
@@ -1252,6 +1397,7 @@ class BinaryIndexedTree
     public int Sum(int from, int to) { return Sum(to) - Sum(from); }
     int Sum(int to) { var sum = 0; for (var i = to; i > 0; i -= i & (-i)) sum += bit[i]; return sum; }
 }
+
 class Amoeba
 {
     public const int Dimension = 2;
@@ -2503,7 +2649,7 @@ class AVLTree<T> : IEnumerable<T>, ICollection<T>, ICollection, IEnumerable
         Console.WriteLine($"要素数 : {avl.Count} 個");
     }
 }
-
+#endregion グラフ
 class PointInt : Pair<int, int>
 {
     public int X { get { return First; } set { First = value; } }
